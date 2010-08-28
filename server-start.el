@@ -1,0 +1,5 @@
+(setq load-path (cons "~/elisp" load-path))
+(require 'cl)
+(require 'edit-server)
+(edit-server-start)
+(loop while t do (sit-for 60))
