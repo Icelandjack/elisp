@@ -1,7 +1,7 @@
 ;; Set the cursor type
-(blink-cursor-mode)
-(setq default-cursor-type 'bar)
-(set-cursor-color 'cyan)
+;; (blink-cursor-mode)
+;; (setq default-cursor-type 'bar)
+;; (set-cursor-color 'cyan)
 
 ;; Magit
 (add-to-list 'load-path "~/elisp/magit")
@@ -44,9 +44,8 @@
 ;;   (interactive) 
 ;;   (twittering-update-status-from-minibuffer (buffer-substring (region-beginning) (region-end)))) 
    
-(setq twittering-username "macnod") 
-(setq twittering-password "weasel")
-
+(setq twittering-username "username") 
+(setq twittering-password "password")
 
 ;; Slime and SBCL (in Linux only)
 ;; (add-to-list 'load-path "/usr/share/common-lisp/source/slime")
@@ -81,10 +80,10 @@
 
 ;; nXML mode
 ;; begin
-(load "nxml-mode-20041004/rng-auto.el")
-(setq auto-mode-alist
-      (cons '("\\.\\(xml\\|xsl\\|rng\\|xhtml\\|rdf\\|xul\\)\\'" . nxml-mode)
-            auto-mode-alist))
+;; (load "nxml-mode-20041004/rng-auto.el")
+;; (setq auto-mode-alist
+;;       (cons '("\\.\\(xml\\|xsl\\|rng\\|xhtml\\|rdf\\|xul\\)\\'" . nxml-mode)
+;;             auto-mode-alist))
 
 (defun format-xml ()
   (interactive)
@@ -93,21 +92,6 @@
     (while (search-forward "><" nil t)
       (replace-match ">\n<" nil nil))
     (indent-region (point-min) (point-max) nil)))
-
-;;     (while (re-search-forward ">\\(<[a-zA-Z]\\)" nil t)
-;;       (replace-match ">\n\\1" nil nil))
-;;     (beginning-of-buffer)
-;;     (while (re-search-forward ">\\([^ ][^<]+[^ ]\\)<" nil t)
-;;       (when (> (length (match-string-no-properties 1)) 50)
-;;         (replace-match ">\n\\1\n<" nil nil)))
-;;     (beginning-of-buffer)
-;;     (while (re-search-forward "\\(</[^>]+>\\)</" nil t)
-;;       (replace-match "\\1\n</" nil nil)
-;;       (beginning-of-buffer))
-;;     (beginning-of-buffer)
-;;     (while (re-search-forward "/>\\(</[a-zA-Z]\\)" nil t)
-;;       (replace-match "/>\n\\1" nil nil))
-;;     (indent-region (point-min) (point-max) nil)))
 
 (defun format-xml-region (beg end)
   "Indent XML in the specified region."
@@ -120,8 +104,6 @@
       (while (search-forward "><" nil t)
         (replace-match ">\n<" nil nil))
       (indent-region (point-min) (point-max) nil))))
-    
-
 ;; end
 
 ;; XQuery mode
@@ -138,21 +120,21 @@
     (narrow-to-region beg end)
     (execute-kbd-macro [?\M-x ?x ?q ?u ?e ?r ?y ?  ?m ?o ?d ?e return ?\M-< ?\M-% ?l ?e ?t ?  return ?\C-q ?\C-j ?  ?  backspace backspace ?l ?e ?t ?  backspace ?  return ?! ?\M-< ?\M-% ?i ?f ?( return ?\C-q ?\C-j ?i ?f ?( backspace ?  ?( return ?! ?\M-< ?\M-% ?i ?f ?( backspace ?  return ?\C-q ?\C-j ?i ?f ?  ?  backspace ?( backspace])))
 
-;; Javascript mode
-(add-to-list 'auto-mode-alist '("\\.js\\'" . javascript-mode))
-(autoload 'javascript-mode "javascript" nil t)
+;; ;; Javascript mode
+;; (add-to-list 'auto-mode-alist '("\\.js\\'" . javascript-mode))
+;; (autoload 'javascript-mode "javascript" nil t)
 
 ;; PHP mode
-(require 'php-mode)
+;; (require 'php-mode)
 
 ;; Apache mode
-(autoload 'apache-mode "apache-mode" nil t)
-(add-to-list 'auto-mode-alist '("\\.htaccess\\'"   . apache-mode))
-(add-to-list 'auto-mode-alist '("httpd\\.conf\\'"  . apache-mode))
-(add-to-list 'auto-mode-alist '("srm\\.conf\\'"    . apache-mode))
-(add-to-list 'auto-mode-alist '("access\\.conf\\'" . apache-mode))
-(add-to-list 'auto-mode-alist '("sites-\\(available\\|enabled\\)/" . apache-mode))
-(add-to-list 'auto-mode-alist '("\\.vhost" . apache-mode))
+;; (autoload 'apache-mode "apache-mode" nil t)
+;; (add-to-list 'auto-mode-alist '("\\.htaccess\\'"   . apache-mode))
+;; (add-to-list 'auto-mode-alist '("httpd\\.conf\\'"  . apache-mode))
+;; (add-to-list 'auto-mode-alist '("srm\\.conf\\'"    . apache-mode))
+;; (add-to-list 'auto-mode-alist '("access\\.conf\\'" . apache-mode))
+;; (add-to-list 'auto-mode-alist '("sites-\\(available\\|enabled\\)/" . apache-mode))
+;; (add-to-list 'auto-mode-alist '("\\.vhost" . apache-mode))
 
 ;; Temmplate Toolkit files should be opened in HTML mode
 (add-to-list 'auto-mode-alist '("\\.tt2" . html-mode))

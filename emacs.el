@@ -36,3 +36,6 @@
 ;; Misc
 (put 'upcase-region 'disabled nil)
 (put 'dired-find-alternate-file 'disabled nil)
+
+;; Local Settings
+(load "~/.local-settings.el")

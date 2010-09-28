@@ -334,43 +334,43 @@ region into long lines."
   (switch-to-buffer nil))               ; return to the initial buffer
 ;; end
 
-(setf nice-fonts
-      (list
-       "-adobe-courier-medium-r-normal--10-*-75-75-m-60-iso10646-1"
-       "-adobe-courier-medium-r-normal--11-*-100-100-m-60-iso10646-1"
-       "-schumacher-clean-medium-r-normal--12-*-75-75-c-60-iso10646-1"
-       "-schumacher-clean-medium-r-normal--13-*-75-75-c-80-iso646.1991-irv"
-       "-schumacher-clean-medium-r-normal--14-*-75-75-c-80-iso646.1991-irv"
-       "-schumacher-clean-medium-r-normal--15-*-75-75-c-90-iso646.1991-irv"
-       "-schumacher-clean-medium-r-normal--16-*-75-75-c-80-iso646.1991-irv"
-       "-adobe-courier-medium-r-normal--17-*-100-100-m-100-iso10646-1"
-       "-adobe-courier-medium-r-normal--18-*-75-75-m-110-iso10646-1"
-       "-adobe-courier-medium-r-normal--20-*-100-100-m-110-iso10646-1"
-       "-adobe-courier-medium-r-normal--24-*-75-75-m-150-iso10646-1"
-       "-adobe-courier-medium-r-normal--25-*-100-100-m-150-iso10646-1"
-       "-adobe-courier-medium-r-normal--34-*-100-100-m-200-iso10646-1"))
-(setf nice-font-index 2)
+;; (setf nice-fonts
+;;       (list
+;;        "-adobe-courier-medium-r-normal--10-*-75-75-m-60-iso10646-1"
+;;        "-adobe-courier-medium-r-normal--11-*-100-100-m-60-iso10646-1"
+;;        "-schumacher-clean-medium-r-normal--12-*-75-75-c-60-iso10646-1"
+;;        "-schumacher-clean-medium-r-normal--13-*-75-75-c-80-iso646.1991-irv"
+;;        "-schumacher-clean-medium-r-normal--14-*-75-75-c-80-iso646.1991-irv"
+;;        "-schumacher-clean-medium-r-normal--15-*-75-75-c-90-iso646.1991-irv"
+;;        "-schumacher-clean-medium-r-normal--16-*-75-75-c-80-iso646.1991-irv"
+;;        "-adobe-courier-medium-r-normal--17-*-100-100-m-100-iso10646-1"
+;;        "-adobe-courier-medium-r-normal--18-*-75-75-m-110-iso10646-1"
+;;        "-adobe-courier-medium-r-normal--20-*-100-100-m-110-iso10646-1"
+;;        "-adobe-courier-medium-r-normal--24-*-75-75-m-150-iso10646-1"
+;;        "-adobe-courier-medium-r-normal--25-*-100-100-m-150-iso10646-1"
+;;        "-adobe-courier-medium-r-normal--34-*-100-100-m-200-iso10646-1"))
+;; (setf nice-font-index 2)
 
-(defun set-nice-font (index)
-  (cond
-   ((>= index (length nice-fonts))
-    (setf nice-font-index (1- (length nice-fonts))))
-   ((< index 0) (setf nice-font-index 0))
-   (t (setf nice-font-index index)))
-  (set-default-font (nth nice-font-index nice-fonts))
-  (message (format "%s: %s" nice-font-index (nth nice-font-index nice-fonts))))
+;; (defun set-nice-font (index)
+;;   (cond
+;;    ((>= index (length nice-fonts))
+;;     (setf nice-font-index (1- (length nice-fonts))))
+;;    ((< index 0) (setf nice-font-index 0))
+;;    (t (setf nice-font-index index)))
+;;   (set-default-font (nth nice-font-index nice-fonts))
+;;   (message (format "%s: %s" nice-font-index (nth nice-font-index nice-fonts))))
 
-(defun increase-font-size ()
-  "Make the font bigger."
-  (interactive)
-  (incf nice-font-index)
-  (set-nice-font nice-font-index))
+;; (defun increase-font-size ()
+;;   "Make the font bigger."
+;;   (interactive)
+;;   (incf nice-font-index)
+;;   (set-nice-font nice-font-index))
 
-(defun decrease-font-size ()
-  "Make the font smaller."
-  (interactive)
-  (decf nice-font-index)
-  (set-nice-font nice-font-index))
+;; (defun decrease-font-size ()
+;;   "Make the font smaller."
+;;   (interactive)
+;;   (decf nice-font-index)
+;;   (set-nice-font nice-font-index))
 
 (defun guess-number (max)
   (interactive "nRange of 1 to what number? ")
@@ -387,66 +387,66 @@ region into long lines."
         (t (format "==> %s <==, Yes! You got it!" x))))
       (when (not (= x y)) (sit-for 2)))))
 
-(defun org-to-twiki (beg end demotion-delta)
-  "Convert an org-mode document into Twiki topic."
-  (interactive "r\nnDemotion delta: ")
-  (let ((data (buffer-substring beg end)))
-    (with-current-buffer (generate-new-buffer "new-twiki-topic")
-      (insert data)
-      (goto-char (point-min))
-      (while (re-search-forward "^\\(\\*+\\) " nil t)
-        (replace-match 
-         (concat "---"
-                 (make-string
-                  (+ (length (match-string 1)) demotion-delta)
-                  ?+)
-                 " ")))
-      (goto-char (point-min))
-      (while (re-search-forward "^\\( +\\* \\)\\(.+?\\) :: " nil t)
-        (replace-match (concat (match-string 1) "*" (match-string 2) " ::* "))))
-    (switch-to-buffer "new-twiki-topic")
-    (goto-char (point-min))))
+;; (defun org-to-twiki (beg end demotion-delta)
+;;   "Convert an org-mode document into Twiki topic."
+;;   (interactive "r\nnDemotion delta: ")
+;;   (let ((data (buffer-substring beg end)))
+;;     (with-current-buffer (generate-new-buffer "new-twiki-topic")
+;;       (insert data)
+;;       (goto-char (point-min))
+;;       (while (re-search-forward "^\\(\\*+\\) " nil t)
+;;         (replace-match 
+;;          (concat "---"
+;;                  (make-string
+;;                   (+ (length (match-string 1)) demotion-delta)
+;;                   ?+)
+;;                  " ")))
+;;       (goto-char (point-min))
+;;       (while (re-search-forward "^\\( +\\* \\)\\(.+?\\) :: " nil t)
+;;         (replace-match (concat (match-string 1) "*" (match-string 2) " ::* "))))
+;;     (switch-to-buffer "new-twiki-topic")
+;;     (goto-char (point-min))))
 
-(defun org-todo-to-twiki (beg end heading-level)
-  "Convert an org-mode todo list into Twiki markup."
-  (interactive "r\nnHeading level: ")
-  (let ((data (buffer-substring beg end))
-        (last-indent 0))
-    (with-current-buffer (generate-new-buffer "new-twiki-topic")
-      (insert data)
-      (goto-char (point-min))
-      (while (re-search-forward "^\\*+\\|^ +" nil t)
-        (let ((match (if (match-string 0) (match-string 0) "")))
-          (cond
-           ((equal (substring match 0 1) "*")
-            (cond
-             ((= (length match) 2)
-              (setf last-indent (+ 4 heading-level))
-              (replace-match
-               (concat "---" (make-string heading-level ?+))))
-             ((> (length match) 2)
-              (setf last-indent (* 3 (- (length match) 2)))
-              (replace-match
-               (concat (make-string last-indent ?\ ) "*")))
-             (t (replace-match "!!!! "))))
-           ((equal (substring match 0 1) " ")
-             (replace-match
-              (if (> last-indent 0) (make-string (+ last-indent 2) ?\ )
-                "!!!! ")))
-           (t nil)))))
-    (switch-to-buffer "new-twiki-topic")
-    (goto-char (point-min))
-    (replace-regexp "\n\n+" "\n")
-    (goto-char (point-min))
-    (while (re-search-forward "^ +\\* \\(TODO\\|DONE\\|CLOSED:\\) .+$" nil t)
-      (replace-match (concat (match-string 0) " %BR%")))
-    (goto-char (point-min))
-    (while (re-search-forward "\\(^ +\\* \\)TODO " nil t)
-      (replace-match (concat (match-string 1) "%TODO% ")))
-    (goto-char (point-min))
-    (while (re-search-forward "\\(^ +\\* \\)DONE " nil t)
-      (replace-match (concat (match-string 1) "%DONE% ")))
-    (goto-char (point-min))))
+;; (defun org-todo-to-twiki (beg end heading-level)
+;;   "Convert an org-mode todo list into Twiki markup."
+;;   (interactive "r\nnHeading level: ")
+;;   (let ((data (buffer-substring beg end))
+;;         (last-indent 0))
+;;     (with-current-buffer (generate-new-buffer "new-twiki-topic")
+;;       (insert data)
+;;       (goto-char (point-min))
+;;       (while (re-search-forward "^\\*+\\|^ +" nil t)
+;;         (let ((match (if (match-string 0) (match-string 0) "")))
+;;           (cond
+;;            ((equal (substring match 0 1) "*")
+;;             (cond
+;;              ((= (length match) 2)
+;;               (setf last-indent (+ 4 heading-level))
+;;               (replace-match
+;;                (concat "---" (make-string heading-level ?+))))
+;;              ((> (length match) 2)
+;;               (setf last-indent (* 3 (- (length match) 2)))
+;;               (replace-match
+;;                (concat (make-string last-indent ?\ ) "*")))
+;;              (t (replace-match "!!!! "))))
+;;            ((equal (substring match 0 1) " ")
+;;              (replace-match
+;;               (if (> last-indent 0) (make-string (+ last-indent 2) ?\ )
+;;                 "!!!! ")))
+;;            (t nil)))))
+;;     (switch-to-buffer "new-twiki-topic")
+;;     (goto-char (point-min))
+;;     (replace-regexp "\n\n+" "\n")
+;;     (goto-char (point-min))
+;;     (while (re-search-forward "^ +\\* \\(TODO\\|DONE\\|CLOSED:\\) .+$" nil t)
+;;       (replace-match (concat (match-string 0) " %BR%")))
+;;     (goto-char (point-min))
+;;     (while (re-search-forward "\\(^ +\\* \\)TODO " nil t)
+;;       (replace-match (concat (match-string 1) "%TODO% ")))
+;;     (goto-char (point-min))
+;;     (while (re-search-forward "\\(^ +\\* \\)DONE " nil t)
+;;       (replace-match (concat (match-string 1) "%DONE% ")))
+;;     (goto-char (point-min))))
 
 (defun string-trim(s)
   (replace-regexp-in-string "^\\( \\|\n\\)+\\|\\( \\|\n\\)+$" "" s))

@@ -60,12 +60,12 @@
 
 ;; Filling
 ;; begin
-(global-set-key (kbd "C-c q") 'auto-fill-mode)
-(add-hook 'text-mode-hook (lambda() (set-fill-column 75)))
-(require 'filladapt)
-(add-hook 'text-mode-hook 'auto-fill-mode)
-(add-hook 'text-mode-hook 'turn-on-filladapt-mode)
-;; (global-set-key (kbd "M-q") 'fill-paragraph)
+;; (global-set-key (kbd "C-c q") 'auto-fill-mode)
+;; (add-hook 'text-mode-hook (lambda() (set-fill-column 75)))
+;; (require 'filladapt)
+;; (add-hook 'text-mode-hook 'auto-fill-mode)
+;; (add-hook 'text-mode-hook 'turn-on-filladapt-mode)
+;;;; (global-set-key (kbd "M-q") 'fill-paragraph)
 ;; end
 
 ;; Show column numbers when editing perl or text
@@ -79,8 +79,8 @@
 
 ;; Spelling
 ;; begin
-(setq ispell-program-name "/usr/bin/aspell")
-(require 'ispell)
+;; (setq ispell-program-name "/usr/bin/aspell")
+;; (require 'ispell)
 ;; end
 
 ;; Swapping text
@@ -103,14 +103,14 @@
 
 ;; Cut and Paste
 ;; begin
-(setq x-select-enable-clipboard t)
-;; (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
-(delete-selection-mode 1)
+;; (setq x-select-enable-clipboard t)
+;; ;; (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
+;; (delete-selection-mode 1)
 ;; end
 
 ;; These require bowker.el to be loaded
-(global-set-key (kbd "<C-return>") 'query-ml-server)
-(global-set-key (kbd "<C-S-return>") 'query-dbxml-with-region)
+;; (global-set-key (kbd "<C-return>") 'query-ml-server)
+;; (global-set-key (kbd "<C-S-return>") 'query-dbxml-with-region)
 
 ;; Wrap lines in partial width windows
 (setq truncate-partial-width-windows nil)
@@ -119,10 +119,10 @@
 ;;(require 'psvn)
 
 ;; Misc global-set-key
-(global-set-key (kbd "C-S-s") 'search-forward)
+;; (global-set-key (kbd "C-S-s") 'search-forward)
 
 ;; These were put in by emacs at some point
-(put 'erase-buffer 'disabled nil)
-(setq font-lock-maximum-decoration t)  
-(put 'downcase-region 'disabled nil)
+;; (put 'erase-buffer 'disabled nil)
+;; (setq font-lock-maximum-decoration t)  
+;; (put 'downcase-region 'disabled nil)
 
