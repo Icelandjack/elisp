@@ -248,38 +248,38 @@ region into long lines."
 
 ;; Berkeley DB XML
 ;; begin
-(defvar query-dbxml-pipeline "/home/donnie/lib/db-xml/pipeline.pl")
+;; (defvar query-dbxml-pipeline "/home/donnie/lib/db-xml/pipeline.pl")
 
-(defun query-dbxml-with-region (beg end)
-  "Query dbxml with selected text"
-  (interactive "*r")
-  (let ((newbuffer nil)
-        (buffer (get-buffer "result"))
-        (xquery (buffer-substring beg end)))
-    (setq dbxml-result
-          (cond
-           ((buffer-live-p buffer) buffer)
-           (t (setq newbuffer t) (generate-new-buffer "result"))))
-    (with-current-buffer dbxml-result
-      (with-timeout
-          (10 (insert "Gave up because query was taking too long."))
-        (erase-buffer)
-        (insert (query-dbxml xquery t)))
-      (nxml-mode)
-      (format-xml)
-      (goto-char (point-min))
-      (when newbuffer (switch-to-buffer (current-buffer))))))
+;; (defun query-dbxml-with-region (beg end)
+;;   "Query dbxml with selected text"
+;;   (interactive "*r")
+;;   (let ((newbuffer nil)
+;;         (buffer (get-buffer "result"))
+;;         (xquery (buffer-substring beg end)))
+;;     (setq dbxml-result
+;;           (cond
+;;            ((buffer-live-p buffer) buffer)
+;;            (t (setq newbuffer t) (generate-new-buffer "result"))))
+;;     (with-current-buffer dbxml-result
+;;       (with-timeout
+;;           (10 (insert "Gave up because query was taking too long."))
+;;         (erase-buffer)
+;;         (insert (query-dbxml xquery t)))
+;;       (nxml-mode)
+;;       (format-xml)
+;;       (goto-char (point-min))
+;;       (when newbuffer (switch-to-buffer (current-buffer))))))
 
-(defun query-dbxml (xquery &optional timed)
-  "Query the Momentum Berkeley DBXML database with an XQuery string"
-  (let ((file (make-temp-file "elisp-dbxml-")))
-    (write-region xquery nil file)
-    (let ((result (time (shell-command-to-string
-                         (concat "cat " file " | " query-dbxml-pipeline)))))
-      (delete-file file)
-      (concat
-       (if timed (format "%.3f seconds\n\n" (car result)) nil)
-       (cadr result)))))
+;; (defun query-dbxml (xquery &optional timed)
+;;   "Query the Momentum Berkeley DBXML database with an XQuery string"
+;;   (let ((file (make-temp-file "elisp-dbxml-")))
+;;     (write-region xquery nil file)
+;;     (let ((result (time (shell-command-to-string
+;;                          (concat "cat " file " | " query-dbxml-pipeline)))))
+;;       (delete-file file)
+;;       (concat
+;;        (if timed (format "%.3f seconds\n\n" (car result)) nil)
+;;        (cadr result)))))
 ;; end
 
 ;; To allow easy building of functions that query restful Web services

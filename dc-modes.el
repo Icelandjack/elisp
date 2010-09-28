@@ -1,25 +1,31 @@
+;; Set the cursor type
+(blink-cursor-mode)
+(setq default-cursor-type 'bar)
+(set-cursor-color 'cyan)
+
 ;; Magit
-(add-to-list 'load-path "/home/donnie/elisp/magit")
+(add-to-list 'load-path "~/elisp/magit")
 (require 'magit)
+(setq magit-git-executable "/usr/local/git/bin/git")
 
 ;; Multiterm
 (require 'multi-term)
 (setq multi-term-program "/bin/bash")
 
 ;; Edit server for chrome
-(if (and (daemonp) (locate-library "edit-server"))
-    (progn
-      (require 'edit-server)
-      (edit-server-start)))
+;; (if (and (daemonp) (locate-library "edit-server"))
+;;     (progn
+;;       (require 'edit-server)
+;;       (edit-server-start)))
 
 
 ;; Enable full-screen
-(defun fullscreen (&optional f)
-  (interactive)
-  (set-frame-parameter f 'fullscreen
-                       (if (frame-parameter f 'fullscreen) nil 'fullboth)))
-(global-set-key [f11] 'fullscreen)
-(add-hook 'after-make-frame-functions 'fullscreen)
+;; (defun fullscreen (&optional f)
+;;   (interactive)
+;;   (set-frame-parameter f 'fullscreen
+;;                        (if (frame-parameter f 'fullscreen) nil 'fullboth)))
+;; (global-set-key [f11] 'fullscreen)
+;; (add-hook 'after-make-frame-functions 'fullscreen)
 
 ;; Encryption
 ;; (require 'crypt++)
@@ -43,10 +49,10 @@
 
 
 ;; Slime and SBCL (in Linux only)
-(add-to-list 'load-path "/usr/share/common-lisp/source/slime")
-(setq inferior-lisp-program "/usr/bin/sbcl")
-(require 'slime)
-(slime-setup '(slime-repl))
+;; (add-to-list 'load-path "/usr/share/common-lisp/source/slime")
+;; (setq inferior-lisp-program "/usr/bin/sbcl")
+;; (require 'slime)
+;; (slime-setup '(slime-repl))
 ;; (setq slime-net-coding-system 'utf-8-unix)
 ;; (add-to-list 'load-path "/home/donnie/elisp/slime-2.0")
 ;; (slime-setup)
