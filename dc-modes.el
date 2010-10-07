@@ -60,6 +60,9 @@
 ;;                                         :username "webmaster")
 ;;       slime-filename-translations)
 
+;; Slime and SBCL in Mac OS X
+(setq inferior-lisp-program "/usr/local/bin/sbcl")
+
 ;; Use cperl-mode instead of perl-mode
 ;; begin
 (mapc
