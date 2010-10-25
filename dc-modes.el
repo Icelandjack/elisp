@@ -3,6 +3,16 @@
 ;; (setq default-cursor-type 'bar)
 ;; (set-cursor-color 'cyan)
 
+;; Perl::Tidy
+(defun perltidy ()
+  "Run perltidy on the current region or function."
+  (interactive)
+  (let ((orig-point (point)))
+    (unless mark-active (mark-defun))
+    (shell-command-on-region (point) (mark) "perltidy -q" nil t)
+    (goto-char orig-point)))
+(global-set-key "\C-ct" 'perltidy)
+
 ;; Magit
 (add-to-list 'load-path "~/elisp/magit")
 (require 'magit)
@@ -17,7 +27,8 @@
 ;;     (progn
 ;;       (require 'edit-server)
 ;;       (edit-server-start)))
-
+(require 'edit-server)
+(edit-server-start)
 
 ;; Enable full-screen
 ;; (defun fullscreen (&optional f)
