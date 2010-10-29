@@ -1,3 +1,12 @@
+;; Set the cursor type
+(setq blink-cursor-alist '((bar . 4)))
+(setq cursor-in-non-selected-windows nil)
+(setq blink-cursor-interval 0.25)
+(blink-cursor-mode 1)
+(set-cursor-color 'cyan)
+
+;; (setq default-cursor-type 'bar)
+
 ;; Org-mode settings
 (setf org-hide-leading-stars t)
 (setf org-replace-disputed-keys t)

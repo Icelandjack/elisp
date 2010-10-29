@@ -1,8 +1,3 @@
-;; Set the cursor type
-;; (blink-cursor-mode)
-;; (setq default-cursor-type 'bar)
-;; (set-cursor-color 'cyan)
-
 ;; Perl::Tidy
 (defun perltidy ()
   "Run perltidy on the current region or function."
