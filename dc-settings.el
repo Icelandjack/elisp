@@ -1,12 +1,3 @@
-;; Set the cursor type
-(setq blink-cursor-alist '((bar . 4)))
-(setq cursor-in-non-selected-windows nil)
-(setq blink-cursor-interval 0.25)
-(blink-cursor-mode 1)
-(set-cursor-color 'cyan)
-
-;; (setq default-cursor-type 'bar)
-
 ;; Org-mode settings
 (setf org-hide-leading-stars t)
 (setf org-replace-disputed-keys t)
@@ -135,3 +126,12 @@
 ;; (setq font-lock-maximum-decoration t)  
 ;; (put 'downcase-region 'disabled nil)
 
+;; Set the cursor type. These settings here will get overwritten when
+;; this file is processed by Aquamacs. See the file
+;; /Users/dcameron/Library/Preferences/Aquamacs
+;; Emacs/customizations.el instead.
+;; (setq blink-cursor-alist '(box . nil))
+(setq cursor-in-non-selected-windows nil)
+(setq blink-cursor-interval 0.15)
+;; (set-cursor-color 'cyan)
+;; (blink-cursor-mode t)
