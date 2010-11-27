@@ -476,3 +476,17 @@ region into long lines."
   (cl-set-buffer-substring
    beg end
    (apply 'concat (reverse (split-string (buffer-substring beg end) "")))))
+
+(defun fib (x)
+  (cond
+   ((zerop x) 0)
+   ((= x 1) 1)
+   (t (+ (fib (1- x)) (fib (- x 2))))))
+
+(defun memoize (f)
+  (lexical-let ((g (symbol-function f))
+                (cache (make-hash-table :test 'equal)))
+    (setf (symbol-function f)
+          (lambda (&rest p)
+            (let ((v (gethash p cache)))
+              (if v v (puthash p (apply g p) cache)))))))

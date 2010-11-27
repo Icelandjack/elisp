@@ -25,19 +25,24 @@
 (require 'edit-server)
 (edit-server-start)
 
-;; Enable full-screen
-;; (defun fullscreen (&optional f)
-;;   (interactive)
-;;   (set-frame-parameter f 'fullscreen
-;;                        (if (frame-parameter f 'fullscreen) nil 'fullboth)))
-;; (global-set-key [f11] 'fullscreen)
-;; (add-hook 'after-make-frame-functions 'fullscreen)
+(if this-is-aquamacs
+    (progn ;; Slime and SBCL in Mac OS X
+      (setq inferior-lisp-program "/usr/local/bin/sbcl"))
 
-;; Encryption
-;; (require 'crypt++)
-;; (setq crypt-encryption-type 'gpg
-;;       crypt-encryption-file-extension "\\(\\.gpg\\)$")
-;; (modify-coding-system-alist 'file "\\.gpg\\'" 'no-conversion)
+  (progn ;; Aquamacs has all of this already
+    ;; Enable full-screen
+    (defun fullscreen (&optional f)
+      (interactive)
+      (set-frame-parameter f 'fullscreen
+                           (if (frame-parameter f 'fullscreen) nil 'fullboth)))
+    (global-set-key [f11] 'fullscreen)
+    (add-hook 'after-make-frame-functions 'fullscreen)
+
+    ;; Zoom
+    (defun zoom-in () (interactive) (text-scale-increase 1))
+    (defun zoom-out () (interactive) (text-scale-increase -1))
+    (global-set-key [f8] 'zoom-out)
+    (global-set-key [f9] 'zoom-in)))
 
 ;; Open *.t files in cperl-mode
 (add-to-list 'auto-mode-alist '("\\.t\\'" . cperl-mode))
@@ -50,25 +55,6 @@
 ;;   (interactive) 
 ;;   (twittering-update-status-from-minibuffer (buffer-substring (region-beginning) (region-end)))) 
    
-(setq twittering-username "username") 
-(setq twittering-password "password")
-
-;; Slime and SBCL (in Linux only)
-;; (add-to-list 'load-path "/usr/share/common-lisp/source/slime")
-;; (setq inferior-lisp-program "/usr/bin/sbcl")
-;; (require 'slime)
-;; (slime-setup '(slime-repl))
-;; (setq slime-net-coding-system 'utf-8-unix)
-;; (add-to-list 'load-path "/home/donnie/elisp/slime-2.0")
-;; (slime-setup)
-;; (push (slime-create-filename-translator :machine-instance "sinistercode.com"
-;;                                         :remote-host "sinistercode"
-;;                                         :username "webmaster")
-;;       slime-filename-translations)
-
-;; Slime and SBCL in Mac OS X
-(setq inferior-lisp-program "/usr/local/bin/sbcl")
-
 ;; Use cperl-mode instead of perl-mode
 ;; begin
 (mapc
