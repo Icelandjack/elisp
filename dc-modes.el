@@ -17,17 +17,15 @@
 (require 'multi-term)
 (setq multi-term-program "/bin/bash")
 
-;; Edit server for chrome
-;; (if (and (daemonp) (locate-library "edit-server"))
-;;     (progn
-;;       (require 'edit-server)
-;;       (edit-server-start)))
-(require 'edit-server)
-(edit-server-start)
+;; ;; Edit server for Chrome
+;; (require 'edit-server)
+;; (edit-server-start)
 
 (if this-is-aquamacs
-    (progn ;; Slime and SBCL in Mac OS X
+    (progn 
+      ;; Slime and SBCL in Mac OS X
       (setq inferior-lisp-program "/usr/local/bin/sbcl"))
+
 
   (progn ;; Aquamacs has all of this already
     ;; Enable full-screen
@@ -42,7 +40,17 @@
     (defun zoom-in () (interactive) (text-scale-increase 1))
     (defun zoom-out () (interactive) (text-scale-increase -1))
     (global-set-key [f8] 'zoom-out)
-    (global-set-key [f9] 'zoom-in)))
+    (global-set-key [f9] 'zoom-in)
+
+    ;; Cut and Paste
+    (global-set-key "\C-w" 'clipboard-kill-region)
+    (global-set-key "\M-w" 'clipboard-kill-ring-save)
+    (global-set-key "\C-y" 'clipboard-yank)
+
+    ;; Selection deleted when key pressed
+    (delete-selection-mode 1)))
+
+
 
 ;; Open *.t files in cperl-mode
 (add-to-list 'auto-mode-alist '("\\.t\\'" . cperl-mode))

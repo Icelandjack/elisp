@@ -101,13 +101,6 @@
 (when (fboundp 'windmove-default-keybindings)
   (windmove-default-keybindings))
 
-;; Cut and Paste
-;; begin
-;; (setq x-select-enable-clipboard t)
-;; ;; (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
-;; (delete-selection-mode 1)
-;; end
-
 ;; These require bowker.el to be loaded
 ;; (global-set-key (kbd "<C-return>") 'query-ml-server)
 ;; (global-set-key (kbd "<C-S-return>") 'query-dbxml-with-region)

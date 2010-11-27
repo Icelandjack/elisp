@@ -14,6 +14,9 @@
 ;;                                     (switch-to-buffer-other-frame server-buf))))
 ;;  '(show-paren-mode t))
 
+;; Local Settings
+(load "~/.local-settings.el")
+
 ;; Modify load-path
 ;; (setenv "PATH" (concat "/usr/local/bin" ":" (getenv "PATH")))
 (setq load-path (cons "~/elisp" load-path))
@@ -30,13 +33,11 @@
 ;; Macros
 (load "dc-macros.el")
 
-;; Misc
-(put 'upcase-region 'disabled nil)
-(put 'dired-find-alternate-file 'disabled nil)
-
 ;; General settings
 (load "dc-settings.el")
 
-;; Local Settings
-(load "~/.local-settings.el")
+;; Misc
+(put 'upcase-region 'disabled nil)
+(put 'dired-find-alternate-file 'disabled nil)
 (put 'downcase-region 'disabled nil)
+
