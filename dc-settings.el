@@ -68,10 +68,11 @@
 ;;;; (global-set-key (kbd "M-q") 'fill-paragraph)
 ;; end
 
-;; Show column numbers when editing perl or text
+;; Show column numbers when editing perl or text or or Lisp
 ;; begin
 (add-hook 'cperl-mode-hook (lambda() (column-number-mode 1)))
 (add-hook 'text-mode-hook (lambda() (column-number-mode 1)))
+(add-hook 'lisp-mode-hook (lambda() (column-number-mode 1)))
 ;; end
 
 ;; Set the window title to the file we're working on
