@@ -321,9 +321,9 @@ region into long lines."
 ;; Macro utilities
 ;; begin
 (defun save-macro (name)                  
-  "save a macro. Take a name as argument
-     and save the last defined macro under 
-     this name at the end of your .emacs"
+  "Save a macro. Take a name as argument and save the last
+   defined macro as a function with this name at the end of your
+   dc-macros.el file."
   (interactive "SName of the macro: ")  ; ask for the name of the macro    
   (kmacro-name-last-macro name)         ; use this name for the macro    
   (find-file "~/elisp/dc-macros.el")    ; open the .emacs file 
@@ -476,3 +476,19 @@ region into long lines."
   (cl-set-buffer-substring
    beg end
    (apply 'concat (reverse (split-string (buffer-substring beg end) "")))))
+
+(defun filter-region (beg end filter)
+  "Remove lines for which the given Lisp expression returns false"
+  (interactive "*r\nxExp: ")
+  (let ((lines nil)
+        (index 1))
+    (save-restriction
+      (narrow-to-region beg end)
+      (goto-char (point-min))
+      (while (not (eobp))
+        (let ((line (buffer-substring (point-at-bol) (point-at-eol))))
+          (when (funcall filter index line) (push line lines))
+          (forward-line 1)
+          (incf index)))
+      (delete-region (point-min) (point-max))
+      (loop for line in (reverse lines) do (insert (concat line "\n"))))))

@@ -26,6 +26,7 @@
 
 ;; Utilities
 (load "dc-utilities.el")
+(load "dc-vindicia.el")
 
 ;; Macros
 (load "dc-macros.el")
