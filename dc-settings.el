@@ -68,10 +68,11 @@
 ;;;; (global-set-key (kbd "M-q") 'fill-paragraph)
 ;; end
 
-;; Show column numbers when editing perl or text
+;; Show column numbers when editing perl or text or or Lisp
 ;; begin
 (add-hook 'cperl-mode-hook (lambda() (column-number-mode 1)))
 (add-hook 'text-mode-hook (lambda() (column-number-mode 1)))
+(add-hook 'lisp-mode-hook (lambda() (column-number-mode 1)))
 ;; end
 
 ;; Set the window title to the file we're working on
@@ -100,13 +101,6 @@
 ;; WindMove
 (when (fboundp 'windmove-default-keybindings)
   (windmove-default-keybindings))
-
-;; Cut and Paste
-;; begin
-;; (setq x-select-enable-clipboard t)
-;; ;; (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
-;; (delete-selection-mode 1)
-;; end
 
 ;; These require bowker.el to be loaded
 ;; (global-set-key (kbd "<C-return>") 'query-ml-server)

@@ -492,3 +492,18 @@ region into long lines."
           (incf index)))
       (delete-region (point-min) (point-max))
       (loop for line in (reverse lines) do (insert (concat line "\n"))))))
+
+(defun fib (x)
+  (cond
+   ((zerop x) 0)
+   ((= x 1) 1)
+   (t (+ (fib (1- x)) (fib (- x 2))))))
+
+(defun memoize (f)
+  (lexical-let ((g (symbol-function f))
+                (cache (make-hash-table :test 'equal)))
+    (setf (symbol-function f)
+          (lambda (&rest p)
+            (let ((v (gethash p cache)))
+              (if v v (puthash p (apply g p) cache)))))))
+
