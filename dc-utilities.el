@@ -1,5 +1,13 @@
 ;; Misc
 ;; begin
+(defun replace-regexps-in-string (string &rest replacements)
+  (loop for i from 0 below (length replacements) by 2
+        for regexp = (elt replacements i)
+        for replace-with = (elt replacements (1+ i))
+        for result = (replace-regexp-in-string regexp replace-with string)
+                     then (replace-regexp-in-string regexp replace-with result)
+        finally return result))
+
 (defun unfill-paragraph () ;; bound to C-x M-q
   "Do the opposite of fill-paragraph; stuff all lines in the current
 paragraph into a single long line."
