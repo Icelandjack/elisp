@@ -1,3 +1,6 @@
+;; PHP
+(c-set-offset 'arglist-intro 4)
+
 ;; Perl::Tidy
 (defun perltidy ()
   "Run perltidy on the current region or function."
