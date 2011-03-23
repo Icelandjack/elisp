@@ -34,8 +34,10 @@
     ;; Enable full-screen
     (defun fullscreen (&optional f)
       (interactive)
-      (set-frame-parameter f 'fullscreen
-                           (if (frame-parameter f 'fullscreen) nil 'fullboth)))
+      (if (functionp 'ns-toggle-fullscreen)
+          (ns-toggle-fullscreen)
+        (set-frame-parameter f 'fullscreen
+                             (if (frame-parameter f 'fullscreen) nil 'fullboth))))
     (global-set-key [f11] 'fullscreen)
     (add-hook 'after-make-frame-functions 'fullscreen)
 
@@ -49,6 +51,10 @@
     (global-set-key "\C-w" 'clipboard-kill-region)
     (global-set-key "\M-w" 'clipboard-kill-ring-save)
     (global-set-key "\C-y" 'clipboard-yank)
+
+    ;; Blinking red cursor (when viewed with inverse rendering)
+    (set-cursor-color 'cyan)
+    (blink-cursor-mode t)
 
     ;; Selection deleted when key pressed
     (delete-selection-mode 1)))

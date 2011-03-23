@@ -501,6 +501,26 @@ region into long lines."
       (delete-region (point-min) (point-max))
       (loop for line in (reverse lines) do (insert (concat line "\n"))))))
 
+(defun nagios-services (beg end host-name)
+  "Format the highlighted area as nagios services"
+  (interactive "*r\nxHost name: ")
+  (save-restriction
+    (narrow-to-region beg end)
+    (goto-char (point-min))
+    (let ((services nil))
+      (while (not (eobp))
+        (let ((service (buffer-substring (point-at-bol) (point-at-eol))))
+          (when service
+            (push (format "define service {\n    %s\n    %s\n    %s\n}\n"
+                          "use passive-service"
+                          (format "host_name %s" host-name)
+                          (format "service_description %s" (string-trim service)))
+                  services)))
+        (forward-line 1))
+      (when services
+        (cl-set-buffer-substring
+         (point-min) (point-max) (string-join "\n" services))))))
+
 (defun fib (x)
   (cond
    ((zerop x) 0)
@@ -515,3 +535,36 @@ region into long lines."
             (let ((v (gethash p cache)))
               (if v v (puthash p (apply g p) cache)))))))
 
+
+;; Make a list of the functions in some perl code
+(defun list-functions ()
+  (interactive)
+  (let ((functions nil)
+        (source-buffer (buffer-name)))
+    (goto-char (point-min))
+    (while (re-search-forward
+            "^\\(\\t\\| \\)*sub\\(\\t\\| \\)\\([_a-zA-Z0-9]+\\)" nil t)
+      (push (match-string 3) functions))
+    (let ((buffer (or (get-buffer "functions")
+                      (generate-new-buffer "functions"))))
+      (with-current-buffer buffer
+        (erase-buffer)
+        (insert
+         (string-join
+          "\n"
+          (mapcar (lambda (f) (concat source-buffer "::" f))
+                  (sort functions 'string<))))
+        (switch-to-buffer (current-buffer))))))
+
+(defun goto-function ()
+  (interactive)
+  (let ((location (split-string
+                   (buffer-substring (point-at-bol) (point-at-eol))
+                   "::")))
+    (with-current-buffer (get-buffer (first location))
+      (let ((regex (concat "^\\(\\t\\| \\)*sub\\(\\t\\| \\)+"
+                           (second location))))
+        (goto-char (point-min))
+        (switch-to-buffer (current-buffer))
+        (message regex)
+        (re-search-forward regex nil t)))))
