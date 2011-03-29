@@ -41,6 +41,7 @@
 (put 'upcase-region 'disabled nil)
 (put 'dired-find-alternate-file 'disabled nil)
 (put 'downcase-region 'disabled nil)
+(set-frame-size-according-to-resolution)
 
 (custom-set-variables
   ;; custom-set-variables was added by Custom.

@@ -1,10 +1,29 @@
+;; The function name says it all
+(defun set-frame-size-according-to-resolution ()
+  (interactive)
+  (if window-system
+  (progn
+    ;; use 120 char wide window for largeish displays
+    ;; and smaller 80 column windows for smaller displays
+    ;; pick whatever numbers make sense for you
+    (if (> (x-display-pixel-width) 1280)
+           (add-to-list 'default-frame-alist (cons 'width 160))
+           (add-to-list 'default-frame-alist (cons 'width 80)))
+    ;; for the height, subtract a couple hundred pixels
+    ;; from the screen height (for panels, menubars and
+    ;; whatnot), then divide by the height of a char to
+    ;; get the height we want
+    (add-to-list 'default-frame-alist 
+         (cons 'height (/ (- (x-display-pixel-height) 100)
+                             (frame-char-height)))))))
+
 ;; Org-mode settings
 (setf org-hide-leading-stars t)
 (setf org-replace-disputed-keys t)
 
 ;; Indent levels
-(setq cperl-indent-level 2
-      cperl-close-paren-offset -2
+(setq cperl-indent-level 4
+      cperl-close-paren-offset -4
       cperl-continued-statement-offset 0
       cperl-indent-parens-as-block t
       cperl-tab-always-indent t)
@@ -17,7 +36,7 @@
 ;; begin
 (setq sql-indent-tabs-mode nil)
 (setq-default indent-tabs-mode nil)
-(setq-default tab-width 2)
+(setq-default tab-width 4)
 ;; end
 
 ;; Show matching parens

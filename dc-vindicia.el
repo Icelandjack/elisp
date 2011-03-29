@@ -99,16 +99,14 @@
 ;; jira-diff-filediff function.  Don't call this function directly.
 (defun dc-int-filediff (line)
   "Generates an Subversion command that can run on the shell."
-  (let* ((path2 (replace-regexp-in-string "/java/3.6.0/" "/java/3.5.0/" line))
-         ;; (replace-regexp-in-string
-         ;;         "/VindiciaClient350/" "/VindiciaClient360/" line))
+  (let* ((earlier (replace-regexps-in-string 
+                   line
+                   "3\\.6" "3.5"
+                   "360" "350"
+                   "3_6" "3_5"))
          (repo "https://svn.vindicia.com/svn/vindicia/")
-         (old-branch "branches/release/vindicia-3.5.2.2/")
-         (new-branch "branches/release/vindicia-3.6.0/")
-         (path1 
-           (replace-regexp-in-string "/3\\([_.]\\)6\\(\\.[0-9]\\)?/"
-                                     "/3\\15\\2/" line)))
-    (concat "svn diff " repo old-branch path1 " " repo new-branch path2)))
+         (later line))
+    (concat "svn diff " repo earlier " " repo later)))
 
 ;; In the jira-diff buffer, you can call this function while on an
 ;; 'Index:' line.  The function will try to compare the code that the
@@ -123,7 +121,7 @@
 (defun jira-diff-filediff ()
   (interactive)
   (let ((command (dc-int-filediff
-                  (buffer-substring (+ (point-at-bol) 13)
+                  (buffer-substring (+ (point-at-bol) 7)
                                     (point-at-eol)))))
     (async-shell-command
      (concat "echo \"" command "\"; echo; " command "; echo; echo Done."))))
