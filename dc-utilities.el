@@ -178,7 +178,8 @@ region into long lines."
 ;; the HTTP server.
 (defun http-get (url-path &optional args username password)
   "Send ARGS to URL as a GET request."
-  (let ((url-request-method "GET")
+  (let ((url-request-extra-headers nil)
+        (url-request-method "GET")
         (encoded-url (concat
                       url-path
                       (when args
