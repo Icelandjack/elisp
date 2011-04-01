@@ -184,7 +184,7 @@ region into long lines."
       
 ;; Issue a GET request to URL. Returns a string with the raw response from
 ;; the HTTP server.
-(defun http-get (url-path &optional args username password)
+(defun http-get (url-path &optional args headers)
   "Send ARGS to URL as a GET request."
   (let ((url-request-extra-headers nil)
         (url-request-method "GET")
@@ -194,16 +194,21 @@ region into long lines."
                         (concat "?" (mapconcat
                                      (lambda (arg)
                                        (concat
-                                        (url-hexify-string (car arg))
+                                        (url-hexify-string (first arg))
                                         "="
-                                        (url-hexify-string (cadr arg))))
+                                        (url-hexify-string (second arg))))
                                      args
                                      "&"))))))
-    (when username
-      (push `("Authorization" . 
-              ,(concat "Basic " (base64-encode-string 
-                                 (concat username ":" password))))
-            url-request-extra-headers))
+    (setq url-reuqest-extra-headers
+          (loop for (key value) in headers
+                for xvalue = (cond
+                              ((and (equal key "Authorization") (listp value))
+                               (concat "Basic "
+                                       (base64-encode-string
+                                        (concat (first value) ":"
+                                                (second value)))))
+                              (t value))
+                collect (list key xvalue)))
     (let ((response
            (time
             (with-timeout 
@@ -213,7 +218,7 @@ region into long lines."
                   (url-retrieve-synchronously encoded-url)
                 (buffer-string))))))
       (concat
-       (format "Response Time: %.3f\n\n" (car response))
+       (format "Response Time: %.3f\n" (car response))
        (cadr response)))))
 
 (defun query-http-server (method url &optional args username password)
@@ -569,3 +574,47 @@ region into long lines."
         (switch-to-buffer (current-buffer))
         (message regex)
         (re-search-forward regex nil t)))))
+
+;; (let ((url-request-method "GET")
+;;              (url-request-extra-headers '(("Authorization" . "Basic bWFjbm9kOndlYXNlbDY1NTM1"))))
+;;          (with-current-buffer
+;;              (url-retrieve-synchronously "http://192.168.7.101:4242/tags")
+;;            (goto-char (point-min))
+;;            (buffer-substring (search-forward "\n\n") (point-max))))
+
+(defun chattermancy-get (url-path &optional args headers)
+  (with-current-buffer (get-buffer "*scratch*")
+    (erase-buffer)
+    (goto-char (point-min))
+    (insert (http-get 
+      (goto-char (point-min))
+      (buffer-substring (search-forward "\n\n" nil t) (point-max)))))
+
+(defun chattermancy-get-1 (url-path args username password)
+  (with-current-buffer (get-buffer "*scratch*")
+    (erase-buffer)
+    (goto-char (point-min))
+    (insert (chattermancy-get url-path args username password))
+    (nxml-mode)
+    (format-xml)
+    (goto-char (point-min)))
+  'OK)
+
+(defun chattermancy-get-2 (path &optional args)
+  (chattermancy-get-1 (concat "http://192.168.7.101:4242" path) args
+                      chattermancy-username chattermancy-password))
+
+
+(defun chattermancy-get-3 (url-path args username password)
+  (with-current-buffer (get-buffer "*scratch*")
+    (erase-buffer)
+    (goto-char (point-min))
+    (insert (http-get url-path args username password))
+    (nxml-mode)
+    (format-xml)
+    (goto-char (point-min)))
+  'OK)
+
+(defun chattermancy-get-4 (path &optional args)
+  (chattermancy-get-3 (concat "http://192.168.7.131:4242" path) args
+                      chattermancy-username chattermancy-password))
