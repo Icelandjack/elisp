@@ -53,7 +53,7 @@
     (global-set-key "\C-y" 'clipboard-yank)
 
     ;; Blinking red cursor (when viewed with inverse rendering)
-    (set-cursor-color 'cyan)
+    ;; (set-cursor-color 'cyan)
     (blink-cursor-mode t)
 
     ;; Selection deleted when key pressed
