@@ -555,25 +555,30 @@ region into long lines."
                       (generate-new-buffer "functions"))))
       (with-current-buffer buffer
         (erase-buffer)
-        (insert
-         (string-join
-          "\n"
-          (mapcar (lambda (f) (concat source-buffer "::" f))
-                  (sort functions 'string<))))
+        (insert (concat source-buffer "\n"))
+        (insert (string-join "\n" 
+                             (mapcar (lambda (x) (concat "    " x))
+                                     (sort functions 'string<))))
+        (goto-char (point-min))
         (switch-to-buffer (current-buffer))))))
 
 (defun goto-function ()
   (interactive)
-  (let ((location (split-string
-                   (buffer-substring (point-at-bol) (point-at-eol))
-                   "::")))
-    (with-current-buffer (get-buffer (first location))
-      (let ((regex (concat "^\\(\\t\\| \\)*sub\\(\\t\\| \\)+"
-                           (second location))))
+  (let ((f (string-trim (buffer-substring (point-at-bol) (point-at-eol))))
+        (buffer (progn
+                  (goto-char (point-min))
+                  (string-trim
+                   (buffer-substring (point-at-bol) (point-at-eol))))))
+    (search-forward (concat "    " f) nil t)
+    (goto-char (- (point) (length f)))
+    (with-current-buffer (get-buffer buffer)
+      (let ((regex (concat "^\\(\\t\\| \\)*sub\\(\\t\\| \\)+" f)))
         (goto-char (point-min))
         (switch-to-buffer (current-buffer))
-        (message regex)
-        (re-search-forward regex nil t)))))
+        (message (concat "Go to " f))
+        (goto-char (point-at-bol))
+        (re-search-forward regex nil t)
+        (goto-char (point-at-bol))))))
 
 ;; (let ((url-request-method "GET")
 ;;              (url-request-extra-headers '(("Authorization" . "Basic bWFjbm9kOndlYXNlbDY1NTM1"))))
