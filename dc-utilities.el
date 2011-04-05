@@ -151,94 +151,54 @@ region into long lines."
 ;; begin
 (setq http-post-timeout 120)
 
+(defun url-request (key-value-pairs)
+  (mapconcat (lambda (a) (concat (url-hexify-string (first a)) "="
+                                 (url-hexify-string (second a))))
+             key-value-pairs "&"))
+                                 
+
 ;; Post to URL. Returns a string with the raw response from the HTTP
 ;; server.
-(defun http-post (url args &optional username password)
+(defun http-request (type url &optional args headers)
   "Send ARGS to URL as a POST request."
-  (let ((url-request-method "POST")
-        (url-request-extra-headers
-         `(("Content-type" . "application/x-www-form-urlencoded")))
-        (url-request-data
-         (concat
-          (mapconcat 
-           (lambda (arg)
-             (concat (url-hexify-string (car arg))
-                     "="
-                     (url-hexify-string (cadr arg))))
-           args
-           "&")))
-        (error nil))
-    (when username
-      (push `("Authorization" . 
-              ,(concat "Basic " (base64-encode-string 
-                                 (concat username ":" password))))
-            url-request-extra-headers))
-    (let ((response
-           (time
-            (with-timeout 
-                (http-post-timeout "Gave up because server was taking too long.")
-              (with-current-buffer 
-                  (url-retrieve-synchronously url)
-                (buffer-string))))))
-      (concat (format "Response Time: %.3f\n\n" (car response)) (cadr response)))))
+  (when (not (member type '(:get :post)))
+    (error "Type must be :get or :post"))
+  (let ((url-request-method (substring (upcase (symbol-name type)) 1))
+        (url-request-extra-headers (when (eql type :post)
+                                     '(("Content-type" .
+                                        "application/x-www-form-urlencoded"))))
+        (url-request-data (when (and (eql type :post) args)
+                            (url-request args)))
+        (encoded-url (if (eql type :get)
+                         (concat url (when args
+                                       (concat "?" (url-request args))))
+                       url)))
+    (when headers
+      (loop for (key value) in headers
+            for xvalue = (cond
+                          ((and (equal key "Authorization") (listp value))
+                           (concat "Basic "
+                                   (base64-encode-string
+                                    (concat (first value) ":"
+                                            (second value)))))
+                          (t value))
+            do (push (cons key xvalue) url-request-extra-headers)))
+    (let* ((response
+            (time
+             (with-timeout 
+                 (http-post-timeout "Gave up. Server was taking too long.")
+               (with-current-buffer 
+                   (url-retrieve-synchronously encoded-url)
+                 (buffer-string)))))
+           (full-response
+            (concat
+             (format "[%d milliseconds]\n" (* 1000 (first response)))
+             (second response)))
+           (header (substring full-response 0 (search "\n\n" full-response)))
+           (body (substring full-response (+ (search "\n\n" full-response) 2))))
+      (list header body))))
       
-;; Issue a GET request to URL. Returns a string with the raw response from
-;; the HTTP server.
-(defun http-get (url-path &optional args headers)
-  "Send ARGS to URL as a GET request."
-  (let ((url-request-extra-headers nil)
-        (url-request-method "GET")
-        (encoded-url (concat
-                      url-path
-                      (when args
-                        (concat "?" (mapconcat
-                                     (lambda (arg)
-                                       (concat
-                                        (url-hexify-string (first arg))
-                                        "="
-                                        (url-hexify-string (second arg))))
-                                     args
-                                     "&"))))))
-    (setq url-reuqest-extra-headers
-          (loop for (key value) in headers
-                for xvalue = (cond
-                              ((and (equal key "Authorization") (listp value))
-                               (concat "Basic "
-                                       (base64-encode-string
-                                        (concat (first value) ":"
-                                                (second value)))))
-                              (t value))
-                collect (list key xvalue)))
-    (let ((response
-           (time
-            (with-timeout 
-                (http-post-timeout
-                 "Gave up because server was taking too long.")
-              (with-current-buffer 
-                  (url-retrieve-synchronously encoded-url)
-                (buffer-string))))))
-      (concat
-       (format "Response Time: %.3f\n" (car response))
-       (cadr response)))))
-
-(defun query-http-server (method url &optional args username password)
-  "method => 'http-get or 'http-post; args => '((\"k1\" \"v1\") (\"k2\" \"v2\"))"
-  (let ((buffer (or (get-buffer "http-result")
-                    (generate-new-buffer "http-result"))))
-    (with-current-buffer buffer
-      (erase-buffer)
-      (insert (apply method url args username password))
-      (switch-to-buffer (current-buffer)))))
-
-(defun fetch-from-marked-uri (beg end)
-  (interactive "*r")
-  (query-http-server 'http-get (buffer-substring beg end)))
-
-;; (query-http-server "http://iatse478-dev.org/p/iatse/t.pl"
-;;                    '(("last" "Cameron") ("first" "Donnie")))
-
-;; end
-
+      
 (defun scrape-string (regexp string)
   (let ((start 0) (matches nil))
     (while (string-match regexp string start)
@@ -260,78 +220,6 @@ region into long lines."
            (replace-regexp-in-string "^/" "" part))
           (t (replace-regexp-in-string "^/\\|/$" "" part))))))
 
-;; Berkeley DB XML
-;; begin
-;; (defvar query-dbxml-pipeline "/home/donnie/lib/db-xml/pipeline.pl")
-
-;; (defun query-dbxml-with-region (beg end)
-;;   "Query dbxml with selected text"
-;;   (interactive "*r")
-;;   (let ((newbuffer nil)
-;;         (buffer (get-buffer "result"))
-;;         (xquery (buffer-substring beg end)))
-;;     (setq dbxml-result
-;;           (cond
-;;            ((buffer-live-p buffer) buffer)
-;;            (t (setq newbuffer t) (generate-new-buffer "result"))))
-;;     (with-current-buffer dbxml-result
-;;       (with-timeout
-;;           (10 (insert "Gave up because query was taking too long."))
-;;         (erase-buffer)
-;;         (insert (query-dbxml xquery t)))
-;;       (nxml-mode)
-;;       (format-xml)
-;;       (goto-char (point-min))
-;;       (when newbuffer (switch-to-buffer (current-buffer))))))
-
-;; (defun query-dbxml (xquery &optional timed)
-;;   "Query the Momentum Berkeley DBXML database with an XQuery string"
-;;   (let ((file (make-temp-file "elisp-dbxml-")))
-;;     (write-region xquery nil file)
-;;     (let ((result (time (shell-command-to-string
-;;                          (concat "cat " file " | " query-dbxml-pipeline)))))
-;;       (delete-file file)
-;;       (concat
-;;        (if timed (format "%.3f seconds\n\n" (car result)) nil)
-;;        (cadr result)))))
-;; end
-
-;; To allow easy building of functions that query restful Web services
-(defun query-service (function &rest function-arguments)
-  (let ((newbuffer nil))
-    (with-current-buffer
-        (cond
-         ((buffer-live-p (get-buffer "result")) "result")
-         (t (setf newbuffer t) (generate-new-buffer "result")))
-      (erase-buffer)
-      (insert (apply function function-arguments))
-      (nxml-mode)
-      (format-xml)
-      (goto-char (point-min))
-      (when newbuffer (switch-to-buffer (current-buffer))))))
-
-;; end
-
-;; Query momentum DBXML database
-(setf momentum-host "windsor84.com")
-(setf momentum-username "webmaster")
-(setf momentum-password "password")
-
-(defun momentum-dbxml-get (xquery)
-  "Send XQuery to the current momentum host (momentum-host) and
-   retrieve the result."
-  (http-get
-   (concat "http://" momentum-host "/wsp/query")
-   `(("q" ,xquery))
-   momentum-username
-   momentum-password))
-
-(defun query-momentum-dbxml (beg end)
-  "Query the current momentum service with the XQuery in the selected region"
-  (interactive "*r")
-  (let ((newbuffer nil) (xquery (buffer-substring beg end)))
-    (query-service 'momentum-dbxml-get xquery)))
-
 ;; Macro utilities
 ;; begin
 (defun save-macro (name)                  
@@ -348,44 +236,6 @@ region into long lines."
   (switch-to-buffer nil))               ; return to the initial buffer
 ;; end
 
-;; (setf nice-fonts
-;;       (list
-;;        "-adobe-courier-medium-r-normal--10-*-75-75-m-60-iso10646-1"
-;;        "-adobe-courier-medium-r-normal--11-*-100-100-m-60-iso10646-1"
-;;        "-schumacher-clean-medium-r-normal--12-*-75-75-c-60-iso10646-1"
-;;        "-schumacher-clean-medium-r-normal--13-*-75-75-c-80-iso646.1991-irv"
-;;        "-schumacher-clean-medium-r-normal--14-*-75-75-c-80-iso646.1991-irv"
-;;        "-schumacher-clean-medium-r-normal--15-*-75-75-c-90-iso646.1991-irv"
-;;        "-schumacher-clean-medium-r-normal--16-*-75-75-c-80-iso646.1991-irv"
-;;        "-adobe-courier-medium-r-normal--17-*-100-100-m-100-iso10646-1"
-;;        "-adobe-courier-medium-r-normal--18-*-75-75-m-110-iso10646-1"
-;;        "-adobe-courier-medium-r-normal--20-*-100-100-m-110-iso10646-1"
-;;        "-adobe-courier-medium-r-normal--24-*-75-75-m-150-iso10646-1"
-;;        "-adobe-courier-medium-r-normal--25-*-100-100-m-150-iso10646-1"
-;;        "-adobe-courier-medium-r-normal--34-*-100-100-m-200-iso10646-1"))
-;; (setf nice-font-index 2)
-
-;; (defun set-nice-font (index)
-;;   (cond
-;;    ((>= index (length nice-fonts))
-;;     (setf nice-font-index (1- (length nice-fonts))))
-;;    ((< index 0) (setf nice-font-index 0))
-;;    (t (setf nice-font-index index)))
-;;   (set-default-font (nth nice-font-index nice-fonts))
-;;   (message (format "%s: %s" nice-font-index (nth nice-font-index nice-fonts))))
-
-;; (defun increase-font-size ()
-;;   "Make the font bigger."
-;;   (interactive)
-;;   (incf nice-font-index)
-;;   (set-nice-font nice-font-index))
-
-;; (defun decrease-font-size ()
-;;   "Make the font smaller."
-;;   (interactive)
-;;   (decf nice-font-index)
-;;   (set-nice-font nice-font-index))
-
 (defun guess-number (max)
   (interactive "nRange of 1 to what number? ")
   (let ((y (1+ (random (if (null max) 10 max))))
@@ -400,67 +250,6 @@ region into long lines."
         ((> x y) "Too big")
         (t (format "==> %s <==, Yes! You got it!" x))))
       (when (not (= x y)) (sit-for 2)))))
-
-;; (defun org-to-twiki (beg end demotion-delta)
-;;   "Convert an org-mode document into Twiki topic."
-;;   (interactive "r\nnDemotion delta: ")
-;;   (let ((data (buffer-substring beg end)))
-;;     (with-current-buffer (generate-new-buffer "new-twiki-topic")
-;;       (insert data)
-;;       (goto-char (point-min))
-;;       (while (re-search-forward "^\\(\\*+\\) " nil t)
-;;         (replace-match 
-;;          (concat "---"
-;;                  (make-string
-;;                   (+ (length (match-string 1)) demotion-delta)
-;;                   ?+)
-;;                  " ")))
-;;       (goto-char (point-min))
-;;       (while (re-search-forward "^\\( +\\* \\)\\(.+?\\) :: " nil t)
-;;         (replace-match (concat (match-string 1) "*" (match-string 2) " ::* "))))
-;;     (switch-to-buffer "new-twiki-topic")
-;;     (goto-char (point-min))))
-
-;; (defun org-todo-to-twiki (beg end heading-level)
-;;   "Convert an org-mode todo list into Twiki markup."
-;;   (interactive "r\nnHeading level: ")
-;;   (let ((data (buffer-substring beg end))
-;;         (last-indent 0))
-;;     (with-current-buffer (generate-new-buffer "new-twiki-topic")
-;;       (insert data)
-;;       (goto-char (point-min))
-;;       (while (re-search-forward "^\\*+\\|^ +" nil t)
-;;         (let ((match (if (match-string 0) (match-string 0) "")))
-;;           (cond
-;;            ((equal (substring match 0 1) "*")
-;;             (cond
-;;              ((= (length match) 2)
-;;               (setf last-indent (+ 4 heading-level))
-;;               (replace-match
-;;                (concat "---" (make-string heading-level ?+))))
-;;              ((> (length match) 2)
-;;               (setf last-indent (* 3 (- (length match) 2)))
-;;               (replace-match
-;;                (concat (make-string last-indent ?\ ) "*")))
-;;              (t (replace-match "!!!! "))))
-;;            ((equal (substring match 0 1) " ")
-;;              (replace-match
-;;               (if (> last-indent 0) (make-string (+ last-indent 2) ?\ )
-;;                 "!!!! ")))
-;;            (t nil)))))
-;;     (switch-to-buffer "new-twiki-topic")
-;;     (goto-char (point-min))
-;;     (replace-regexp "\n\n+" "\n")
-;;     (goto-char (point-min))
-;;     (while (re-search-forward "^ +\\* \\(TODO\\|DONE\\|CLOSED:\\) .+$" nil t)
-;;       (replace-match (concat (match-string 0) " %BR%")))
-;;     (goto-char (point-min))
-;;     (while (re-search-forward "\\(^ +\\* \\)TODO " nil t)
-;;       (replace-match (concat (match-string 1) "%TODO% ")))
-;;     (goto-char (point-min))
-;;     (while (re-search-forward "\\(^ +\\* \\)DONE " nil t)
-;;       (replace-match (concat (match-string 1) "%DONE% ")))
-;;     (goto-char (point-min))))
 
 (defun string-trim(s)
   (replace-regexp-in-string "^\\( \\|\n\\)+\\|\\( \\|\n\\)+$" "" s))
@@ -580,46 +369,35 @@ region into long lines."
         (re-search-forward regex nil t)
         (goto-char (point-at-bol))))))
 
-;; (let ((url-request-method "GET")
-;;              (url-request-extra-headers '(("Authorization" . "Basic bWFjbm9kOndlYXNlbDY1NTM1"))))
-;;          (with-current-buffer
-;;              (url-retrieve-synchronously "http://192.168.7.101:4242/tags")
-;;            (goto-char (point-min))
-;;            (buffer-substring (search-forward "\n\n") (point-max))))
-
-(defun chattermancy-get (url-path &optional args headers)
-  (with-current-buffer (get-buffer "*scratch*")
-    (erase-buffer)
-    (goto-char (point-min))
-    (insert (http-get 
+(defun query-web-service (type url &optional args headers)
+  (let ((result (http-request type url args headers))
+        (content-buffer (or (get-buffer "web-service-response")
+                            (generate-new-buffer "web-service-response")))
+        (headers-buffer (or (get-buffer "web-service-headers")
+                            (generate-new-buffer "web-service-headers"))))
+    (with-current-buffer headers-buffer
+      (conf-mode)
+      (erase-buffer)
       (goto-char (point-min))
-      (buffer-substring (search-forward "\n\n" nil t) (point-max)))))
+      (insert (first result))
+      (goto-char (point-min)))
+    (with-current-buffer content-buffer
+      (nxml-mode)
+      (erase-buffer)
+      (goto-char (point-min))
+      (insert (second result))
+      (goto-char (point-min))
+      (format-xml))
+    'OK))
 
-(defun chattermancy-get-1 (url-path args username password)
-  (with-current-buffer (get-buffer "*scratch*")
-    (erase-buffer)
-    (goto-char (point-min))
-    (insert (chattermancy-get url-path args username password))
-    (nxml-mode)
-    (format-xml)
-    (goto-char (point-min)))
-  'OK)
-
-(defun chattermancy-get-2 (path &optional args)
-  (chattermancy-get-1 (concat "http://192.168.7.101:4242" path) args
-                      chattermancy-username chattermancy-password))
-
-
-(defun chattermancy-get-3 (url-path args username password)
-  (with-current-buffer (get-buffer "*scratch*")
-    (erase-buffer)
-    (goto-char (point-min))
-    (insert (http-get url-path args username password))
-    (nxml-mode)
-    (format-xml)
-    (goto-char (point-min)))
-  'OK)
-
-(defun chattermancy-get-4 (path &optional args)
-  (chattermancy-get-3 (concat "http://192.168.7.131:4242" path) args
-                      chattermancy-username chattermancy-password))
+(defun query-chattermancy (type path &optional arguments creds)
+  (query-web-service
+   type
+   (concat chattermancy-protocol "://"
+           chattermancy-host ":" 
+           chattermancy-port
+           path)
+   arguments
+   (if creds
+       `(("Authorization" (,(first creds) ,(second creds))))
+     `(("Authorization" (,chattermancy-username  ,chattermancy-password))))))
