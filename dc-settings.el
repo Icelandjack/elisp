@@ -14,7 +14,7 @@
     ;; whatnot), then divide by the height of a char to
     ;; get the height we want
     (add-to-list 'default-frame-alist 
-         (cons 'height (/ (- (x-display-pixel-height) 100)
+         (cons 'height (/ (- (x-display-pixel-height) 200)
                              (frame-char-height)))))))
 
 ;; Org-mode settings
