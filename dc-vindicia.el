@@ -125,3 +125,20 @@
                                     (point-at-eol)))))
     (async-shell-command
      (concat "echo \"" command "\"; echo; " command "; echo; echo Done."))))
+
+(defun document-function ()
+  (interactive)
+  (insert "#
+# Usage: 
+#
+# Purpose:
+#
+# Returns:
+#
+# Parameters:
+#
+# Comments: No comment.
+")
+  (forward-line -9)
+  (goto-char (point-at-eol)))
+

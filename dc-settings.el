@@ -146,5 +146,5 @@
 ;; (setq blink-cursor-alist '(box . nil))
 (setq cursor-in-non-selected-windows nil)
 (setq blink-cursor-interval 0.15)
-;; (set-cursor-color 'cyan)
+(set-cursor-color "cyan")
 ;; (blink-cursor-mode t)

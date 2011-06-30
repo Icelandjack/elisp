@@ -281,7 +281,9 @@ region into long lines."
    (apply 'concat (reverse (split-string (buffer-substring beg end) "")))))
 
 (defun filter-region (beg end filter)
-  "Remove lines for which the given Lisp expression returns false"
+  "Remove lines for which filter, the given Lisp expression,
+   returns false. The filter function is passed the 1-based index
+   of the line and the text of the line."
   (interactive "*r\nxExp: ")
   (let ((lines nil)
         (index 1))
@@ -401,3 +403,32 @@ region into long lines."
    (if creds
        `(("Authorization" (,(first creds) ,(second creds))))
      `(("Authorization" (,chattermancy-username  ,chattermancy-password))))))
+
+(defun send-message-to-printer (printer message)
+  (let ((target (open-network-stream "printer-client" nil printer 9100)))
+    (process-send-string
+     target
+     (string-to-unibyte
+      (concat "%-12345X@PJL RDYMSG DISPLAY = \""
+              message
+              "\"\r\n%-12345X\r\n")))
+    (sit-for 3)
+    (delete-process "printer-client")
+    'OK))
+
+(defun replace-incrementing (beg end)
+  "Replace the regex with an incrementing integer that starts at 1."
+  (interactive "*r")
+  (save-restriction
+    (narrow-to-region beg end)
+    (goto-char (point-min))
+    (let ((i 0))
+      (while (re-search-forward "debug> [0-9]+" nil t)
+        (replace-match (format "debug> %s" (incf i)))))
+    (goto-char (point-max))))
+
+(defun define-term (beg end)
+  "Use google define to define the highlighted term."
+  (interactive "*r")
+  (let ((term (buffer-substring beg end)))
+    (browse-url (concat "http://google.com/search?q=" term "&tbs=dfn:1"))))
