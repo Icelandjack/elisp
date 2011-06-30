@@ -428,7 +428,7 @@ region into long lines."
     (goto-char (point-max))))
 
 (defun define-term (beg end)
-  "Use google define to define the highlighted term."
+  "Use Google to define the highlighted term."
   (interactive "*r")
-  (let ((term (buffer-substring beg end)))
-    (browse-url (concat "http://google.com/search?q=" term "&tbs=dfn:1"))))
+  (browse-url (concat "http://google.com/search?tbs=dfn:1&q="
+                      (buffer-substring beg end))))
