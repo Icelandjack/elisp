@@ -44,8 +44,8 @@
     ;; Zoom
     (defun zoom-in () (interactive) (text-scale-increase 1))
     (defun zoom-out () (interactive) (text-scale-increase -1))
-    (global-set-key [f8] 'zoom-out)
-    (global-set-key [f9] 'zoom-in)
+    (global-set-key [?\C--] 'zoom-out)
+    (global-set-key [?\C-+] 'zoom-in)
 
     ;; Cut and Paste
     (global-set-key "\C-w" 'clipboard-kill-region)
@@ -137,7 +137,7 @@
 ;; (autoload 'javascript-mode "javascript" nil t)
 
 ;; PHP mode
-;; (require 'php-mode)
+(require 'php-mode)
 
 ;; Apache mode
 ;; (autoload 'apache-mode "apache-mode" nil t)
