@@ -45,7 +45,7 @@
     (defun zoom-in () (interactive) (text-scale-increase 1))
     (defun zoom-out () (interactive) (text-scale-increase -1))
     (global-set-key [?\C--] 'zoom-out)
-    (global-set-key [?\C-+] 'zoom-in)
+    (global-set-key [?\C-=] 'zoom-in)
 
     ;; Cut and Paste
     (global-set-key "\C-w" 'clipboard-kill-region)
