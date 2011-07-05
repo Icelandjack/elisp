@@ -31,6 +31,12 @@
 
 
   (progn ;; Aquamacs has all of this already
+    ;; Load slime
+    (setq inferior-lisp-program "/usr/local/bin/sbcl")
+    (add-to-list 'load-path "~/elisp/slime/")
+    (require 'slime-autoloads)
+    (slime-setup '(slime-fancy))
+
     ;; Enable full-screen
     (defun fullscreen (&optional f)
       (interactive)
