@@ -432,3 +432,20 @@ region into long lines."
   (interactive "*r")
   (browse-url (concat "http://google.com/search?tbs=dfn:1&q="
                       (buffer-substring beg end))))
+
+(defun sum-hours-in-region (beg end)
+  "Calculate the total sum of hours in the region. Hours look
+like '4h' and are always at the end of a line."
+  (interactive "*r")
+  (save-restriction
+    (narrow-to-region beg end)
+    (goto-char (point-min))
+    (let ((hours-n nil)
+          (hours-s nil))
+      (while (re-search-forward "\\([0-9]+\\(\\.[0-9]\\{1,2\\}\\)?\\)+h *$" nil t)
+        (push (string-to-number (match-string-no-properties 1)) hours-n)
+        (push (match-string-no-properties 1) hours-s))
+      (print (concat (string-join " + " (reverse hours-s)) " = "
+                     (number-to-string (reduce '+ hours-n)))))
+    (goto-char (point-max))))
+      
