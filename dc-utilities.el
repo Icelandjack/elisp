@@ -126,7 +126,7 @@ region into long lines."
     (let ((list2 nil) (h (make-hash-table :test 'equal))
           (result nil))
       (goto-char (point-min))
-      (while 
+      (while
           (let ((line (buffer-substring (point-at-bol) (point-at-eol))))
             (forward-line 1)
             (if (equal line "") nil
@@ -155,7 +155,7 @@ region into long lines."
   (mapconcat (lambda (a) (concat (url-hexify-string (first a)) "="
                                  (url-hexify-string (second a))))
              key-value-pairs "&"))
-                                 
+
 
 ;; Post to URL. Returns a string with the raw response from the HTTP
 ;; server.
@@ -185,9 +185,9 @@ region into long lines."
             do (push (cons key xvalue) url-request-extra-headers)))
     (let* ((response
             (time
-             (with-timeout 
+             (with-timeout
                  (http-post-timeout "Gave up. Server was taking too long.")
-               (with-current-buffer 
+               (with-current-buffer
                    (url-retrieve-synchronously encoded-url)
                  (buffer-string)))))
            (full-response
@@ -197,8 +197,8 @@ region into long lines."
            (header (substring full-response 0 (search "\n\n" full-response)))
            (body (substring full-response (+ (search "\n\n" full-response) 2))))
       (list header body))))
-      
-      
+
+
 (defun scrape-string (regexp string)
   (let ((start 0) (matches nil))
     (while (string-match regexp string start)
@@ -222,16 +222,16 @@ region into long lines."
 
 ;; Macro utilities
 ;; begin
-(defun save-macro (name)                  
+(defun save-macro (name)
   "Save a macro. Take a name as argument and save the last
    defined macro as a function with this name at the end of your
    dc-macros.el file."
-  (interactive "SName of the macro: ")  ; ask for the name of the macro    
-  (kmacro-name-last-macro name)         ; use this name for the macro    
-  (find-file "~/elisp/dc-macros.el")    ; open the .emacs file 
+  (interactive "SName of the macro: ")  ; ask for the name of the macro
+  (kmacro-name-last-macro name)         ; use this name for the macro
+  (find-file "~/elisp/dc-macros.el")    ; open the .emacs file
   (goto-char (point-max))               ; go to the end of the .emacs
   (newline)                             ; insert a newline
-  (insert-kbd-macro name)               ; copy the macro 
+  (insert-kbd-macro name)               ; copy the macro
   (newline)                             ; insert a newline
   (switch-to-buffer nil))               ; return to the initial buffer
 ;; end
@@ -264,7 +264,7 @@ region into long lines."
 (defun xmlse-from-url (beg end)
   "Convert the highlighted region from URL-encoded text to plain text"
   (interactive "*r")
-  (cl-set-buffer-substring 
+  (cl-set-buffer-substring
    beg end (second (car (url-parse-query-string (buffer-substring beg end))))))
 
 (defun flatten (x)
@@ -347,7 +347,7 @@ region into long lines."
       (with-current-buffer buffer
         (erase-buffer)
         (insert (concat source-buffer "\n"))
-        (insert (string-join "\n" 
+        (insert (string-join "\n"
                              (mapcar (lambda (x) (concat "    " x))
                                      (sort functions 'string<))))
         (goto-char (point-min))
@@ -396,7 +396,7 @@ region into long lines."
   (query-web-service
    type
    (concat chattermancy-protocol "://"
-           chattermancy-host ":" 
+           chattermancy-host ":"
            chattermancy-port
            path)
    arguments
@@ -448,4 +448,59 @@ like '4h' and are always at the end of a line."
       (print (concat (string-join " + " (reverse hours-s)) " = "
                      (number-to-string (reduce '+ hours-n)))))
     (goto-char (point-max))))
-      
+
+(defun title-from-html (html)
+  "Get the title of an HTML document"
+  (replace-regexps-in-string
+   (car (scrape-string "<title>\\(.*?\\)</title>" html))
+   " - " ""
+   " &mdash; " ""
+   " &ndash; " ""
+   " &x2013; " ""
+   " &8211; " ""
+   " &x2014; " ""
+   " &8212; " ""
+   " &x2012; " ""
+   " &8210; " ""
+   " &x2015; " ""
+   " &8213; " ""
+   "^ +\\| +$" ""))
+
+(defun html-to-content (html)
+  "Strips HTML, JavaScript, Menus, and other stuff from a Web
+   page, attempting to return a plain-text version of the
+   content."
+  (concat (title-from-html html) "    "
+          (string-join
+           " "
+           (remove-if
+            (lambda (s) (< (length s) 140))
+            (split-string
+             (replace-regexps-in-string
+              html
+              "\n" " "
+              "\r" " "
+              "<head.*?</head>" "|"
+              "<script.*?</script>" "|"
+              "<style.*?</style>" "|"
+              "</?\\(p\\|b\\|br\\|hr\\|code\\|i\\|img\\|u\\|del\\|em\\)/?>" " "
+              "</?\\(\\|strong\\|a\\)/?>" " "
+              "<[^>]+?>" "|"
+              "&[^ ]+?;" " "
+              " +|\\|| +" "|"
+              "||+" "|"
+              "  +" " ")
+             "|")))))
+
+(defun get-web-page-text (beg end)
+  (interactive "*r")
+  (let ((result (http-request :get (buffer-substring beg end)))
+        (text-buffer (or (get-buffer "web-page-text")
+                         (generate-new-buffer "web-page-text"))))
+    (with-current-buffer text-buffer
+      (erase-buffer)
+      (goto-char (point-min))
+      (insert (html-to-content (second result)))
+      (goto-char (point-min)))
+    'OK))
+
