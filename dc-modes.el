@@ -1,3 +1,14 @@
+;; For webjump
+(add-to-list 
+ 'webjump-sites
+ '("Vindicia Issue" .
+   [simple-query "https://support.vindicia.com"
+                 "https://support.vindicia.com/browse/"
+                 ""]))
+(add-to-list
+ 'webjump-sites
+ '("Vindicia Issues" . "https://support.vindicia.com"))
+
 ;; Disabling auto-saves
 (define-minor-mode sensitive-mode
   "For sensitive files like password lists.
