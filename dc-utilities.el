@@ -291,7 +291,7 @@ region into long lines."
       (narrow-to-region beg end)
       (goto-char (point-min))
       (while (not (eobp))
-        (let ((line (buffer-substring (point-at-bol) (point-at-eol))))
+        (let ((line (buffer-substring-no-properties (point-at-bol) (point-at-eol))))
           (when (funcall filter index line) (push line lines))
           (forward-line 1)
           (incf index)))
@@ -504,3 +504,14 @@ like '4h' and are always at the end of a line."
       (goto-char (point-min)))
     'OK))
 
+(defun random-hex-number (digits)
+  (interactive "nHow many digits? ")
+  (let ((n (string-to-number (concat "1" (make-string (1- digits) ?0)) 16)))
+    (insert (format "%x" (+ (random n) n)))))
+
+
+;; (defun permutations (string)
+;;   (let ((v (map 'vector 'identity (sort (map 'list 'identity string)))))
+;;     (cons
+;;      (map 'string 'identity v)
+;;             (loop

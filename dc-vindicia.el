@@ -16,6 +16,11 @@
   (forward-line -9)
   (goto-char (point-at-eol)))
 
+
+(defun ack (regex path)
+  (async-shell-command
+   (concat "/root/bin/ack --perl --nocolor " regex path)))
+
 ;; Everything after this comment was obsoleted by Atlassian Software
 ;; (Jira, Fisheye, and Crucible).
 
