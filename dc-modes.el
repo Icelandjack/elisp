@@ -1,4 +1,5 @@
 ;; For webjump
+(require 'webjump)
 (add-to-list 
  'webjump-sites
  '("Vindicia Issue" .
