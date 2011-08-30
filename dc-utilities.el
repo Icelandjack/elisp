@@ -506,8 +506,13 @@ like '4h' and are always at the end of a line."
 
 (defun random-hex-number (digits)
   (interactive "nHow many digits? ")
-  (let ((n (string-to-number (concat "1" (make-string (1- digits) ?0)) 16)))
-    (insert (format "%x" (+ (random n) n)))))
+  (let* ((a "0123456789ABCDEF")
+         (b (substring a 1)))
+    (apply
+     'concat
+     (loop for c from 0 below digits
+           collect (char-to-string
+                    (elt (if (zerop c) b a) (random (+ 15 (signum c)))))))))
 
 
 ;; (defun permutations (string)
