@@ -508,11 +508,12 @@ like '4h' and are always at the end of a line."
   (interactive "nHow many digits? ")
   (let* ((a "0123456789ABCDEF")
          (b (substring a 1)))
-    (apply
-     'concat
-     (loop for c from 0 below digits
-           collect (char-to-string
-                    (elt (if (zerop c) b a) (random (+ 15 (signum c)))))))))
+    (insert
+     (apply
+      'concat
+      (loop for c from 0 below digits
+            collect (char-to-string
+                     (elt (if (zerop c) b a) (random (+ 15 (signum c))))))))))
 
 
 ;; (defun permutations (string)
