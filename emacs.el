@@ -50,5 +50,9 @@
   ;; If there is more than one, they won't work right.
  '(blink-cursor-mode t)
  '(column-number-mode t)
+ '(ediff-split-window-function (quote split-window-horizontally))
+ '(ediff-window-setup-function (quote ediff-setup-windows-plain))
  '(inhibit-startup-screen t)
  '(show-paren-mode t))
+
+(put 'narrow-to-region 'disabled nil)

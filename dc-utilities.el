@@ -160,7 +160,8 @@ region into long lines."
 ;; Post to URL. Returns a string with the raw response from the HTTP
 ;; server.
 (defun http-request (type url &optional args headers)
-  "Send ARGS to URL as a POST request."
+  "Sends GET or POST HTTP request to given URL with optional
+   arguments and header."
   (when (not (member type '(:get :post)))
     (error "Type must be :get or :post"))
   (let ((url-request-method (substring (upcase (symbol-name type)) 1))
@@ -239,16 +240,18 @@ region into long lines."
 (defun guess-number (max)
   (interactive "nRange of 1 to what number? ")
   (let ((y (1+ (random (if (null max) 10 max))))
-        (x 0))
+        (x 0)
+        (tries 0))
     (while (not (= x y))
       (setf x (string-to-number
                (read-from-minibuffer
                 (format "Guess a number between 1 and %s: " max))))
+      (incf tries)
       (message
        (cond
         ((< x y) "Too small")
         ((> x y) "Too big")
-        (t (format "==> %s <==, Yes! You got it!" x))))
+        (t (format "==> %s <==, Yes! You got it in %s tries!" x tries))))
       (when (not (= x y)) (sit-for 2)))))
 
 (defun string-trim(s)
@@ -506,7 +509,7 @@ like '4h' and are always at the end of a line."
 
 (defun random-hex-number (digits)
   (interactive "nHow many digits? ")
-  (let* ((a "0123456789ABCDEF")
+  (let* ((a "0123456789abcdef")
          (b (substring a 1)))
     (insert
      (apply
@@ -515,9 +518,18 @@ like '4h' and are always at the end of a line."
             collect (char-to-string
                      (elt (if (zerop c) b a) (random (+ 15 (signum c))))))))))
 
+(defun is-prime (n)
+  (cond ((< n 2) nil)
+        ((= n 2) t)
+        ((zerop (mod n 2)) nil)
+        (t (loop for x from 3 to (sqrt n) by 2 never (zerop (mod n x))))))
+
+(defun next-prime (n)
+  (loop for a = (if (evenp n) (1+ n) n) then (1+ a) when (is-prime a) return a))
 
 ;; (defun permutations (string)
 ;;   (let ((v (map 'vector 'identity (sort (map 'list 'identity string)))))
 ;;     (cons
 ;;      (map 'string 'identity v)
 ;;             (loop
+
