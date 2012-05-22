@@ -1,3 +1,6 @@
+;; Make tramp backup to a local directory
+(setq tramp-auto-save-directory "/Users/dcameron/backup/emacs/")
+
 ;; The function name says it all
 (defun set-frame-size-according-to-resolution ()
   (interactive)
@@ -16,10 +19,6 @@
     (add-to-list 'default-frame-alist 
          (cons 'height (/ (- (x-display-pixel-height) 200)
                              (frame-char-height)))))))
-
-;; Org-mode settings
-(setf org-hide-leading-stars t)
-(setf org-replace-disputed-keys t)
 
 ;; Indent levels
 (setq cperl-indent-level 4
@@ -148,3 +147,4 @@
 (setq blink-cursor-interval 0.15)
 (set-cursor-color "cyan")
 ;; (blink-cursor-mode t)
+
