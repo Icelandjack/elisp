@@ -1,3 +1,24 @@
+;; Atlassian Confluence Wiki Utilities
+;; begin
+(defun replace-heading-markers (old new)
+  (let ((old-point (point)))
+    (goto-char (point-min))
+    (while (re-search-forward (concat "^[" old "]+") nil t)
+      (replace-match
+       (apply 'concat (loop for a from 1 to (length (match-string 0))
+                            collect new))))
+    (goto-char old-point)))
+
+(defun org-to-confluence ()
+  (interactive)
+  (replace-heading-markers "*" "#"))
+
+(defun confluence-to-org ()
+  (interactive)
+  (replace-heading-markers "#" "*"))
+;; end
+
+
 ;; Misc
 ;; begin
 (defun replace-regexps-in-string (string &rest replacements)
@@ -276,12 +297,13 @@ region into long lines."
    ((atom x) (list x))
    (t (loop for a in x append (flatten a)))))
 
-(defun reverse-string (beg end)
+(defun reverse-buffer-region (beg end)
   "Reverse the highlighted string"
   (interactive "*r")
-  (cl-set-buffer-substring
-   beg end
-   (apply 'concat (reverse (split-string (buffer-substring beg end) "")))))
+  (cl-set-buffer-substring beg end (reverse-string (buffer-substring beg end))))   
+
+(defun reverse-string (string)
+  (apply 'concat (reverse (split-string string ""))))
 
 (defun filter-region (beg end filter)
   "Remove lines for which filter, the given Lisp expression,
@@ -452,6 +474,20 @@ like '4h' and are always at the end of a line."
                      (number-to-string (reduce '+ hours-n)))))
     (goto-char (point-max))))
 
+(defun sum-hours-in-buffer (buffer-name &optional explain)
+  (with-current-buffer buffer-name
+    (goto-char (point-min))
+    (let ((hours-n nil)
+          (hours-s nil))
+      (while (re-search-forward "\\([0-9]+\\(\\.[0-9]\\{1,2\\}\\)?\\)+h *$" nil t)
+        (push (string-to-number (match-string-no-properties 1)) hours-n)
+        (push (match-string-no-properties 1) hours-s))
+      (if explain
+          (list (reduce '+ hours-n)
+                (concat (string-join " + " (reverse hours-s)) " = "
+                        (number-to-string (reduce '+ hours-n))))
+        (reduce '+ hours-n)))))
+
 (defun title-from-html (html)
   "Get the title of an HTML document"
   (replace-regexps-in-string
@@ -531,9 +567,61 @@ like '4h' and are always at the end of a line."
 (defun next-prime (n)
   (loop for a = (if (evenp n) (1+ n) n) then (1+ a) when (is-prime a) return a))
 
-;; (defun permutations (string)
-;;   (let ((v (map 'vector 'identity (sort (map 'list 'identity string)))))
-;;     (cons
-;;      (map 'string 'identity v)
-;;             (loop
+(defun find-buffer-matches (buffer-name regex)
+  (with-current-buffer buffer-name
+    (goto-char (point-min))
+    (let ((lines nil))
+      (while (re-search-forward regex nil t)
+        (push (match-string-no-properties 1) lines))
+      lines)))
 
+(defun swap (seq a b)
+  (let ((temp (elt seq a)))
+    (setf (elt seq a) (elt seq b))
+    (setf (elt seq b) temp))
+  seq)
+
+(defun k-index (seq)
+  (loop for k from (- (length seq) 2) downto 0
+        when (< (elt seq k) (elt seq (1+ k))) return k
+        finally (return nil)))
+
+(defun l-index (seq k)
+  (when k
+    (loop for l from (1- (length seq)) downto k
+          when (> (elt seq l) (elt seq k)) return l
+          finally (return nil))))
+
+(defun permute (seq)
+  (let* ((o-seq (stable-sort seq '<))
+         (c-seq (copy-seq o-seq)))
+    (loop for k = (k-index c-seq)
+          for l = (l-index c-seq k)
+          while k do
+          (setf c-seq (swap c-seq k l))
+          (setf c-seq (concat (subseq c-seq 0 k)
+                              (subseq (reverse-string c-seq) k)))
+          collect (copy-seq c-seq))))
+
+(defun file-extension (filename)
+  (string-match "\\.\\([-a-zA-Z0-9]+\\)$" filename)
+  (match-string 1 filename))
+
+(defun set-mode (filename)
+  (let ((fe (file-extension filename)))
+    (cond ((member fe '("pl" "pm" ".t")) (cperl-mode))
+          ((member fe '("xml" "inc-xml")) (nxml-mode))
+          ((eq fe "java") (java-mode))
+          (t (fundamental-mode)))))
+
+(defun open-diff-index (cp)
+  (interactive "d")
+  (let* ((beg (+ (re-search-backward "^Index: ") 7))
+         (end (point-at-eol))
+         (buffer (get-buffer "diff-index"))
+         (filename (concat diff-index-root (buffer-substring beg end))))
+    (goto-char cp)
+    (with-current-buffer buffer
+      (insert-file-contents filename)
+      (set-mode filename))))
+    
