@@ -1,3 +1,9 @@
+;; (load "~/elisp/nxhtml/autostart")
+
+(winner-mode 1)
+
+(global-set-key "\C-cn" 'four-digit-hex-number)
+
 ;; For webjump
 (require 'webjump)
 (add-to-list 
@@ -61,8 +67,8 @@ Null prefix argument turns off the mode."
 (setq multi-term-program "/bin/bash")
 
 ;; ;; Edit server for Chrome
-;; (require 'edit-server)
-;; (edit-server-start)
+(require 'edit-server)
+(edit-server-start)
 
 (if this-is-aquamacs
     (progn 
@@ -72,7 +78,7 @@ Null prefix argument turns off the mode."
 
   (progn ;; Aquamacs has all of this already
     ;; Load slime
-    (setq inferior-lisp-program "/usr/local/bin/sbcl")
+    (setq inferior-lisp-program "/usr/bin/sbcl")
     (add-to-list 'load-path "~/elisp/slime/")
     (require 'slime-autoloads)
     (slime-setup '(slime-fancy))

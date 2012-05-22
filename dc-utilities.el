@@ -518,6 +518,10 @@ like '4h' and are always at the end of a line."
             collect (char-to-string
                      (elt (if (zerop c) b a) (random (+ 15 (signum c))))))))))
 
+(defun four-digit-hex-number ()
+  (interactive)
+  (random-hex-number 4))
+
 (defun is-prime (n)
   (cond ((< n 2) nil)
         ((= n 2) t)
