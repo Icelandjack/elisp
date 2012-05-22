@@ -1,5 +1,5 @@
 ;; Make tramp backup to a local directory
-(setq tramp-auto-save-directory "/Users/dcameron/backup/emacs/")
+(setq tramp-auto-save-directory "~/backup/emacs/")
 
 ;; The function name says it all
 (defun set-frame-size-according-to-resolution ()
