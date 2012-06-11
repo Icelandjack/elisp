@@ -1,11 +1,10 @@
 ;; (load "~/elisp/nxhtml/autostart")
 
-(global-set-key "\C-cn" 'four-digit-hex-number)
 (require 'cl)
 
 ;; Org-mode settings (these have to be set before org is ever loaded)
-(setq org-hide-leading-stars t)
-(setq org-replace-disputed-keys t)
+(setf org-hide-leading-stars t)
+(setf org-replace-disputed-keys t)
 
 ;; For saving org-mode work-time clock history across Emacs sessions
 (setq org-clock-persist 'history)
