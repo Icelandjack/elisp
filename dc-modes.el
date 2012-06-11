@@ -1,15 +1,10 @@
-<<<<<<< HEAD
 ;; (load "~/elisp/nxhtml/autostart")
 
-(winner-mode 1)
-
 (global-set-key "\C-cn" 'four-digit-hex-number)
-=======
 (require 'cl)
 
 ;; Org-mode settings (these have to be set before org is ever loaded)
-(setf org-hide-leading-stars t)
-(setf org-replace-disputed-keys t)
+(setq org-hide-leading-stars t)
 (setq org-replace-disputed-keys t)
 
 ;; For saving org-mode work-time clock history across Emacs sessions
@@ -29,7 +24,6 @@
 
 ;; For returning to a window configuration
 (winner-mode t)
->>>>>>> a0a3f2915934d9954531c05b4093a63d02c92c86
 
 ;; For webjump
 (require 'webjump)
