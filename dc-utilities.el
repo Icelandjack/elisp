@@ -1,3 +1,4 @@
+
 ;; Atlassian Confluence Wiki Utilities
 ;; begin
 (defun replace-heading-markers (old new)
@@ -632,7 +633,7 @@ like '4h' and are always at the end of a line."
          (minutes (truncate (- span (* hours 3600)) 60)))
     (format "%d:%02d" hours minutes)))
 
-(defun check-clock-buffer ()
+(defun check-clock-buffer (buffer)
   "This function checks my work.org buffer to make sure that work
    times don't overlap and that the times are calculated
    correctly everywhere. I run this function before posting
@@ -642,37 +643,38 @@ like '4h' and are always at the end of a line."
         (rets "\\[\\([0-9][-0-9]+\\)[^0-9]+\\([:0-9]+\\)\\]")
         (resp ".*=> *\\([:0-9]+\\)")
         (errors nil))
-    (goto-char (point-min))
-    (while (re-search-forward (concat "^ +CLOCK: " rets "--" rets resp) nil t)
-      (push
-       (list
-        (list (match-string-no-properties 1) (match-string-no-properties 2))
-        (list (match-string-no-properties 3) (match-string-no-properties 4))
-        (match-string-no-properties 5))
-       l))
-    (setf l (sort (reverse l)
-                  (lambda (r1 r2)
-                    (string< (concat (string-join " " (first r1))
-                                     (string-join " " (second r1)))
-                             (concat (string-join " " (first r2))
-                                     (string-join " " (second r2)))))))
-    (loop for (start stop span) in l
-          for bad-span = (not (string= span (dc-time-span
-                                             (string-join " " start)
-                                             (string-join " " stop))))
-          when (or (string< (string-join " " stop) (string-join " " start))
-                   bad-span)
-          do (push (concat "[" (string-join " " start)
-                           "]--[" (string-join " " stop) "]"
-                           (when bad-span " (span)"))
-                   errors))
-    (let ((k (flatten (loop for (start stop span) in l
-                            collect (list (string-join " " start)
-                                          (string-join " " stop))))))
-      (loop for i from 1 to (1- (length k))
-            when (string< (elt k i) (elt k (1- i)))
-            do (push (concat (elt k i) " (overlap)") errors)))
-    (if errors
-        (cons "Errors" (reverse errors))
-      "No errors!")))
+    (with-current-buffer buffer
+      (goto-char (point-min))
+      (while (re-search-forward (concat "^ +CLOCK: " rets "--" rets resp) nil t)
+        (push
+         (list
+          (list (match-string-no-properties 1) (match-string-no-properties 2))
+          (list (match-string-no-properties 3) (match-string-no-properties 4))
+          (match-string-no-properties 5))
+         l))
+      (setf l (sort (reverse l)
+                    (lambda (r1 r2)
+                      (string< (concat (string-join " " (first r1))
+                                       (string-join " " (second r1)))
+                               (concat (string-join " " (first r2))
+                                       (string-join " " (second r2)))))))
+      (loop for (start stop span) in l
+            for bad-span = (not (string= span (dc-time-span
+                                               (string-join " " start)
+                                               (string-join " " stop))))
+            when (or (string< (string-join " " stop) (string-join " " start))
+                     bad-span)
+            do (push (concat "[" (string-join " " start)
+                             "]--[" (string-join " " stop) "]"
+                             (when bad-span " (span)"))
+                     errors))
+      (let ((k (flatten (loop for (start stop span) in l
+                              collect (list (string-join " " start)
+                                            (string-join " " stop))))))
+        (loop for i from 1 to (1- (length k))
+              when (string< (elt k i) (elt k (1- i)))
+              do (push (concat (elt k i) " (overlap)") errors)))
+      (if errors
+          (cons "Errors" (reverse errors))
+        "No errors!"))))
           
