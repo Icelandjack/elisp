@@ -673,7 +673,8 @@ like '4h' and are always at the end of a line."
                                             (string-join " " stop))))))
         (loop for i from 1 to (1- (length k))
               when (string< (elt k i) (elt k (1- i)))
-              do (push (concat (elt k i) " (overlap)") errors)))
+              do (push (concat (elt k (1- i)) "->"
+                               (elt k i) " (overlap)") errors)))
       (if errors
           (cons "Errors" (reverse errors))
         "No errors!"))))
