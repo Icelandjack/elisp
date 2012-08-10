@@ -548,16 +548,29 @@ like '4h' and are always at the end of a line."
   (interactive "nHow many digits? ")
   (let* ((a "0123456789abcdef")
          (b (substring a 1)))
-    (insert
-     (apply
-      'concat
-      (loop for c from 0 below digits
-            collect (char-to-string
-                     (elt (if (zerop c) b a) (random (+ 15 (signum c))))))))))
+    (apply
+     'concat
+     (loop for c from 0 below digits collect
+           (char-to-string
+            (elt (if (zerop c) b a) (random (+ 15 (signum c)))))))))
 
 (defun four-digit-hex-number ()
   (interactive)
-  (random-hex-number 4))
+  (insert (random-hex-number 4)))
+
+(defun obj-note ()
+  (interactive)
+  (insert "$self->Note(\"")
+  (four-digit-hex-number)
+  (insert " debug> \");")
+  (goto-char (- (point-at-eol) 3)))
+
+(defun vin-note ()
+  (interactive)
+  (insert "Note(\"")
+  (four-digit-hex-number)
+  (insert " debug> \");")
+  (goto-char (- (point-at-eol) 3)))
 
 (defun is-prime (n)
   (cond ((< n 2) nil)
@@ -677,5 +690,148 @@ like '4h' and are always at the end of a line."
                                (elt k i) " (overlap)") errors)))
       (if errors
           (cons "Errors" (reverse errors))
-        "No errors!"))))
-          
+        "No errors."))))
+
+(defun eshell/5cmd (&rest args)
+  (let ((olddir (eshell/pwd)))
+    (eshell/cd "/ssh:vincos-5:/usr/bin")
+    (shell-command (eshell-flatten-and-stringify args) "*Shell Command Output*")
+    (eshell/cd olddir)))
+
+(defun eshell/eck (&rest args)
+  (let* ((olddir (eshell/pwd))
+         (path (split-string olddir ":"))
+         (dir (if (= (length path) 3)
+                  (if (> (length args) 1) (second args) (third path))
+                olddir))
+         (rdir (if (string-match "^/Users/dcameron" dir)
+                   (concat "/home/dcameron" (substring dir 15))))
+         (cmd (concat "ack --nocolor " (car args) " " rdir))
+         (buffer (or (get-buffer "*eshell/ack output*")
+                     (generate-new-buffer "*eshell/ack output*"))))
+    (eshell/cd "/ssh:vincos-5:/usr/bin")
+    (shell-command cmd buffer)
+    ;; (with-current-buffer buffer
+    ;;   (erase-buffer)
+    ;;   (insert (format "'%s' args='%d'" cmd (length args))))
+    (eshell/cd olddir)
+    (switch-to-buffer-other-window buffer)
+    ""))
+
+(defun document-perl-program ()
+  (interactive)
+  (let ((start (point-max)))
+    (goto-char start)
+    (insert "
+
+=head1 NAME
+
+name - description
+
+=head1 SYNOPSIS
+
+name [options] [file]
+
+=head1 OPTIONS
+
+=over 8
+
+=item B<--help>|B<-h>
+
+Print this documentation.
+
+=item B<--brief>|B<-b>
+
+Print the most relevant text of each new line in the log
+file. This makes the log much easier to read, but excludes a lot
+of text from each log line.
+
+=back
+
+=head1 DESCRIPTION
+
+This program will tail any new file that appears in the Cashbox
+log directory, typically /var/vindicia/logs or ~/vindicia/logs.
+
+=cut
+
+")
+    (goto-char start)
+    (next-line 4)
+    (goto-char (point-at-bol))))
+
+(defun vindicia-svn-index (url)
+  (let* ((regex "<a href=\"\\([^\"]+\\)\">\\(.+?\\)</a>")
+         (absolute-url (join-paths vindicia-svn-root url))
+         (authorization `(("Authorization" (,vindicia-username
+                                            ,vindicia-password))))
+         (response (http-request :get absolute-url nil authorization))
+         (result (mapcar (lambda (s)
+                           (string-match regex s)
+                           (concat
+                            "[[" (join-paths absolute-url (match-string 1 s))
+                            "][" (match-string 2 s) "]]"))
+                         (remove-if-not
+                          (lambda(s)
+                            (and (string-match regex s)
+                                 (not (member (match-string 2 s)
+                                              '(".." "Subversion")))))
+                          (split-string (second response) "\n"))))
+        (content-buffer (or (get-buffer "web-service-response")
+                            (generate-new-buffer "web-service-response")))
+        (headers-buffer (or (get-buffer "web-service-headers")
+                            (generate-new-buffer "web-service-headers"))))
+    (with-current-buffer headers-buffer
+      (conf-mode)
+      (erase-buffer)
+      (goto-char (point-min))
+      (insert (first response))
+      (goto-char (point-min)))
+    (with-current-buffer content-buffer
+      (erase-buffer)
+      (goto-char (point-min))
+      (insert (concat absolute-url "\n\n"))
+      (loop for line in result do (insert (concat "  " line "\n")))
+      (goto-char (point-min))
+      (org-mode))))
+
+(defun vindicia-svn-file (url)
+  (let* ((content-buffer (or (get-buffer "web-service-response")
+                             (generate-new-buffer "web-service-response")))
+         (headers-buffer (or (get-buffer "web-service-headers")
+                             (generate-new-buffer "web-service-headers")))
+         (absolute-url (join-paths vindicia-svn-root url))
+         (authorization `(("Authorization" (,vindicia-username
+                                            ,vindicia-password))))
+         (response (http-request :get absolute-url nil authorization))
+         (result (second response)))
+    (with-current-buffer headers-buffer
+      (conf-mode)
+      (erase-buffer)
+      (goto-char (point-min))
+      (insert (first response))
+      (goto-char (point-min)))
+    (with-current-buffer content-buffer
+      (erase-buffer)
+      (goto-char (point-min))
+      (fundamental-mode)
+      (insert (concat absolute-url "\n\n"))
+      (insert result)
+      (goto-char (point-min))
+      (cond ((or (string-match "\\.\\(pl\\|pm\\)$" url) 
+                  (string-match "^.+perl" result))
+              (cperl-mode))
+            ((or (string-match "\\.xml$" url)
+                 (string-match "^<\\?xml" result))
+             (nxml-mode))
+            (t nil)))))
+
+(defun open-vindicia-svn-file ()
+  (interactive)
+  (goto-char (+ (point-at-bol) 5))
+  (let ((url (second (split-string (thing-at-point-url-at-point)
+                                   vindicia-svn-root))))
+    (if (string-match "/$" url)
+        (vindicia-svn-index url)
+      (vindicia-svn-file url))))
+   

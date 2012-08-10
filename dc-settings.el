@@ -1,3 +1,6 @@
+(global-set-key (kbd "C-c #") 'four-digit-hex-number)
+(global-set-key (kbd "s-<return>") 'fullscreen)
+
 ;; Make tramp backup to a local directory
 (setq tramp-auto-save-directory "~/backup/emacs/")
 
