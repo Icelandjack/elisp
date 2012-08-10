@@ -1,5 +1,28 @@
 ;; This is dc-vindicia.el, routines to help out with work at Vindicia
 
+(defun comment-lines (buffer-name regex comment)
+  "Locates regex in the buffer, then comments the line that follows regex.
+   If the boolean parameter comment is true, the line is commented.  Otherwise,
+   the line is uncommented.  If the line is already in the target state, this
+   function does nothing to the line.  The function continues until it has
+   found all such lines."
+  (with-current-buffer buffer-name
+    (let ((cp (point))
+          (changed-lines))
+      (goto-char (point-min))
+      (while (re-search-forward regex nil t)
+        (forward-line)
+        (back-to-indentation)
+        (if comment
+            (unless (string= (buffer-substring-no-properties (point) (+ (point) 2)) "# ")
+              (insert "# ")
+              (push (line-number-at-pos) changed-lines))
+          (when (string= (buffer-substring-no-properties (point) (+ (point) 2)) "# ")
+            (delete-char 2)
+            (push (line-number-at-pos) changed-lines))))
+      (goto-char cp)
+      (reverse changed-lines))))
+
 (defun document-function ()
   (interactive)
   (insert "#
