@@ -366,8 +366,8 @@ region into long lines."
         (source-buffer (buffer-name)))
     (goto-char (point-min))
     (while (re-search-forward
-            "^\\(\\t\\| \\)*sub\\(\\t\\| \\)\\([_a-zA-Z0-9]+\\)" nil t)
-      (push (match-string 3) functions))
+            "^\\(\\t\\| \\)*\\(sub\\|method\\)\\(\\t\\| \\)\\([_a-zA-Z0-9]+\\)" nil t)
+      (push (match-string 4) functions))
     (let ((buffer (or (get-buffer "functions")
                       (generate-new-buffer "functions"))))
       (with-current-buffer buffer
@@ -835,3 +835,36 @@ log directory, typically /var/vindicia/logs or ~/vindicia/logs.
         (vindicia-svn-index url)
       (vindicia-svn-file url))))
    
+(defun clear-buffer (buffer)
+  (interactive "b")
+  (with-current-buffer buffer
+    (let ((eshell-buffer-maximum-lines 0))
+      (eshell-truncate-buffer))))
+
+(defun comment-lines (buffer-name regex &rest params)
+  "The params list can contain the named parameters :comment
+   and :line.  Locates regex in the buffer, then comments the
+   line that follows regex.  If the boolean parameter comment is
+   true, the line is commented.  Otherwise, the line is
+   uncommented.  If the line is already in the target state, this
+   function does nothing to the line.  The function continues
+   until it has found all such lines."
+  (with-current-buffer buffer-name
+    (let ((starting-point (point))
+          (changed-lines)
+          (comment (getf params :comment))
+          (line (getf params :line 0)))
+      (goto-char (point-min))
+      (while (re-search-forward regex nil t)
+        (forward-line line)
+        (back-to-indentation)
+        (if comment
+            (unless (string= (buffer-substring-no-properties (point) (+ (point) 2)) "# ")
+              (insert "# ")
+              (push (line-number-at-pos) changed-lines))
+          (when (string= (buffer-substring-no-properties (point) (+ (point) 2)) "# ")
+            (delete-char 2)
+            (push (line-number-at-pos) changed-lines)))
+        (goto-char (point-at-eol)))
+      (goto-char starting-point)
+      (reverse changed-lines))))
