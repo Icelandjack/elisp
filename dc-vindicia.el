@@ -9,14 +9,23 @@
 ;;     (shell-command (format "./re.pl --rcfile %s" rcfile))
 ;;     (eshell/cd old-directory)))
         
-(defun open-files ()
-  (let* ((files '("//vindicia/db/vindicia_classes.xml"
+(defun open-files (dry-run)
+  (let* ((files '(
+
+                  "//vindicia/db/vindicia_classes.xml"
                   "//vindicia/db/vindicia_tables.xml"
                   "//Obj/Entity/MerchantCustomer.pm"
                   "//Obj/Entity/AutoBill.pm"
-                  "//Obj/EntitlementLedger.pm"
+                  "//Obj/EntitlementLedger-1.pm"
+                  "//Obj/EntitlementLedger-2.pm"
+                  "//Obj/EntitlementLedger-3.pm"
                   "//QA/ObjTest.pm"
-                  "//unit_tests/Obj/EntitlementLedger.t"))
+                  "//unit_tests/Obj/EntitlementLedger.t"
+                  "//unit_tests/Obj/Entity/ab_seasonal.t"
+                  "//unit_tests/Obj/Entity/ent.yaml"
+
+
+                  ))
          (shortcuts '(("//vindicia" "/base-path")
                       ("//Obj" "/base-path/site_perl/Vindicia/Obj")
                       ("//QA" "/base-path/site_perl/Vindicia/QA")
@@ -30,7 +39,10 @@
                       collect (if (string-match "^/base-path" name)
                                   (replace-match vindicia-base-path t t name)
                                 name))))
-    (loop for path in paths do (find-file-other-window path))))
+    (loop for path in paths
+          when (not dry-run)
+          do (find-file-other-window path)
+          collect path)))
 
 (defun document-function ()
   (interactive)
