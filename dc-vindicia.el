@@ -17,7 +17,6 @@
                   "//Obj/EntitlementLedger.pm"
                   "//QA/ObjTest.pm"
                   "//unit_tests/Obj/EntitlementLedger.t"))
-         (base-path "/ssh:dcameron@vincos-5:/home/dcameron/vindicia")
          (shortcuts '(("//vindicia" "/base-path")
                       ("//Obj" "/base-path/site_perl/Vindicia/Obj")
                       ("//QA" "/base-path/site_perl/Vindicia/QA")
@@ -29,7 +28,7 @@
                                        do (return (replace-match
                                                    (second shortcut) t t file)))
                       collect (if (string-match "^/base-path" name)
-                                  (replace-match base-path t t name)
+                                  (replace-match vindicia-base-path t t name)
                                 name))))
     (loop for path in paths do (find-file-other-window path))))
 
