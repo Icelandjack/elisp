@@ -9,6 +9,29 @@
 ;;     (shell-command (format "./re.pl --rcfile %s" rcfile))
 ;;     (eshell/cd old-directory)))
         
+(defun open-files ()
+  (let* ((files '("//vindicia/db/vindicia_classes.xml"
+                  "//vindicia/db/vindicia_tables.xml"
+                  "//Obj/Entity/MerchantCustomer.pm"
+                  "//Obj/Entity/AutoBill.pm"
+                  "//Obj/EntitlementLedger.pm"
+                  "//QA/ObjTest.pm"
+                  "//unit_tests/Obj/EntitlementLedger.t"))
+         (base-path "/ssh:dcameron@vincos-5:/home/dcameron/vindicia")
+         (shortcuts '(("//vindicia" "/base-path")
+                      ("//Obj" "/base-path/site_perl/Vindicia/Obj")
+                      ("//QA" "/base-path/site_perl/Vindicia/QA")
+                      ("//unit_tests" "/base-path/qa/server/unit_tests/site_perl/Vindicia/")))
+         (paths (loop for file in files
+                      for name = (loop for shortcut in shortcuts
+                                       when (string-match
+                                             (concat "^" (car shortcut)) file)
+                                       do (return (replace-match
+                                                   (second shortcut) t t file)))
+                      collect (if (string-match "^/base-path" name)
+                                  (replace-match base-path t t name)
+                                name))))
+    (loop for path in paths do (find-file-other-window path))))
 
 (defun document-function ()
   (interactive)
