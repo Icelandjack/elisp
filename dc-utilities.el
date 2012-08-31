@@ -868,3 +868,7 @@ log directory, typically /var/vindicia/logs or ~/vindicia/logs.
         (goto-char (point-at-eol)))
       (goto-char starting-point)
       (reverse changed-lines))))
+
+(defun remote-files-that-are-open ()
+  (remove-if-not (lambda (s) (string-match "\\.[a-z0-9]\\{1,3\\}$" s))
+                 (mapcar 'buffer-name (tramp-list-remote-buffers))))
