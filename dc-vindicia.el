@@ -18,18 +18,21 @@
                   "//Obj/Entity/AutoBill.pm"
                   "//Obj/EntitlementLedger.pm"
                   "//QA/ObjTest.pm"
-                  "//unit_tests/Obj/EntitlementLedger-1.t"
-                  "//unit_tests/Obj/EntitlementLedger-2.t"
-                  "//unit_tests/Obj/EntitlementLedger-3.t"
+                  ;; "//unit_tests/Obj/EntitlementLedger-1.t"
+                  ;; "//unit_tests/Obj/EntitlementLedger-2.t"
+                  ;; "//unit_tests/Obj/EntitlementLedger-3.t"
                   "//unit_tests/Obj/Entity/ab_seasonal.t"
-                  "//unit_tests/Obj/Entity/ent-1.yaml"
-
+                  "//unit_tests/Obj/Entity/ent.yaml"
+                  "//t/ce.pl"
+                  "//t/ce.dat"
 
                   ))
          (shortcuts '(("//vindicia" "/base-path")
                       ("//Obj" "/base-path/site_perl/Vindicia/Obj")
                       ("//QA" "/base-path/site_perl/Vindicia/QA")
-                      ("//unit_tests" "/base-path/qa/server/unit_tests/site_perl/Vindicia/")))
+                      ("//unit_tests"
+                       "/base-path/qa/server/unit_tests/site_perl/Vindicia/")
+                      ("//t" "/ssh:dcameron@alejandra#4007:/home/dcameron/t/")))
          (paths (loop for file in files
                       for name = (loop for shortcut in shortcuts
                                        when (string-match
