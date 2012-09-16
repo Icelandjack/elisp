@@ -869,12 +869,15 @@ log directory, typically /var/vindicia/logs or ~/vindicia/logs.
       (goto-char starting-point)
       (reverse changed-lines))))
 
-(defun remote-files-that-are-open ()
-  (remove-if-not (lambda (s) (string-match "\\.[a-z0-9]\\{1,3\\}$" s))
-                 (mapcar 'buffer-name (tramp-list-remote-buffers))))
-
-(defun revert-remote-files (&optional noconfirm)
-  (loop for buffer in (remote-files-that-are-open)
+(defun revert-regular-files (&optional noconfirm regex)
+  (loop for buffer in 
+        (mapcar 'buffer-name
+                (remove-if
+                 (lambda (b)
+                   (or (string-match "^ *\\*" (buffer-name b))
+                       (not (buffer-file-name b))
+                       (when regex (not (string-match regex (buffer-name b))))))
+                 (buffer-list)))
         do (with-current-buffer buffer
              (revert-buffer t noconfirm))
         collect buffer))
