@@ -13,14 +13,10 @@
   (let* ((files '(
 
                   "//vindicia/db/vindicia_classes.xml"
-                  "//vindicia/db/vindicia_tables.xml"
                   "//Obj/Entity/MerchantCustomer.pm"
                   "//Obj/Entity/AutoBill.pm"
                   "//Obj/EntitlementLedger.pm"
                   "//QA/ObjTest.pm"
-                  ;; "//unit_tests/Obj/EntitlementLedger-1.t"
-                  ;; "//unit_tests/Obj/EntitlementLedger-2.t"
-                  ;; "//unit_tests/Obj/EntitlementLedger-3.t"
                   "//unit_tests/Obj/Entity/ab_seasonal.t"
                   "//unit_tests/Obj/Entity/ent.yaml"
                   "//t/ce.pl"
@@ -197,3 +193,43 @@
 ;;     (async-shell-command
 ;;      (concat "echo \"" command "\"; echo; " command "; echo; echo Done."))))
 
+(defun replace-in-region (replacements)
+  (loop for replacement in replacements
+        for search = (first replacement)
+        for replace = (second replacement)
+        do
+        (goto-char (point-min))
+        (while (if (third replacement)
+                   (re-search-forward search nil t)
+                 (search-forward search nil t))
+          (replace-match replace))))
+
+(defun ce-to-yaml (beg end)
+  (interactive "*r")
+  (save-excursion
+    (save-restriction
+      (narrow-to-region beg end)
+      (replace-in-region
+       `(("^ \\{4\\}\\+{name => '\\([^']+\\)'," "- autobill_name: TX - \\1" t)
+         (" +\\+{name => '\\([^']+\\)', start => '\\([^']+\\)', end => '\\([^']+\\)'}"
+          "    \\1      \\2  \\3" t)
+         (" =>" ":")
+         (" +{\n" "")
+         (" +[\n" "")
+         ("+[qw/" "")
+         ("/]," "")
+         ("]," "")
+         ("]}," "")
+         ("\\},$" "" t)
+         ("'" "")
+         ("+[+{" "{ ")
+         ("entitlements_valid_for" "ent_valid_for")
+         (" +expected_entitlements:"
+          ,(concat "  billing_results: |\n"
+                  "    date         amount\n"
+                  "    end\n"
+                  "  entitlements_granted: |\n"
+                  "    name    start       end\n") t)
+         (",$" "" t)
+
+)))))
