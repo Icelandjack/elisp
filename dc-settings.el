@@ -4,6 +4,8 @@
 ;; Make tramp backup to a local directory
 (setq tramp-auto-save-directory "~/backup/emacs/")
 
+(setq message-log-max 10000)
+
 ;; The function name says it all
 (defun set-frame-size-according-to-resolution ()
   (interactive)

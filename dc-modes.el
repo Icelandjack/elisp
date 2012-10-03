@@ -24,6 +24,16 @@
 ;; For returning to a window configuration
 (winner-mode t)
 
+;;
+;; Emacs Jabber
+;; Begin
+(require 'hexrgb)
+;; adjust this path:
+(add-to-list 'load-path "~/elisp/emacs-jabber-0.8.91")
+;; For 0.7.90 and above:
+(require 'jabber-autoloads)
+;; End
+
 ;; For webjump
 (require 'webjump)
 (add-to-list 
