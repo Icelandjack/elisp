@@ -881,3 +881,6 @@ log directory, typically /var/vindicia/logs or ~/vindicia/logs.
         do (with-current-buffer buffer
              (revert-buffer t noconfirm))
         collect buffer))
+
+(defun dc-play-sound (filename)
+  (shell-command (concat "afplay '" filename "'")))
