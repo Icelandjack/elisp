@@ -1,0 +1,6 @@
+(defun query-customjs (type &optional args headers)
+  (let* ((url "https://erin.hsd1.ca.comcast.net.:22000/data/workspaces/foobar/customjs")
+         (user "devnull1@socialtext.com")
+         (pass "d3vnu11l")
+         (headers (append headers `(("Authorization" (,user ,pass))))))
+    (query-web-service type url args headers)))
