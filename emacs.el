@@ -29,13 +29,16 @@
 
 ;; Utilities
 (load "dc-utilities.el")
-(load "dc-vindicia.el")
 
 ;; Macros
 (load "dc-macros.el")
 
 ;; General settings
 (load "dc-settings.el")
+
+;; Host-dependent settings
+(loop for file in dc-stuff-to-load
+      do (load file))
 
 ;; Misc
 (put 'upcase-region 'disabled nil)
@@ -48,12 +51,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(blink-cursor-mode t)
  '(column-number-mode t)
  '(ediff-split-window-function (quote split-window-horizontally))
  '(ediff-window-setup-function (quote ediff-setup-windows-plain))
  '(inhibit-startup-screen t)
- '(jabber-account-list (quote (("macnod@gmail.com" (:network-server . "talk.google.com") (:connection-type . ssl)) ("dcameron@vindicia.com" (:network-server . "im.vindicia.com") (:connection-type . starttls)))))
+ '(jabber-account-list (quote (("macnod@gmail.com" (:network-server . "talk.google.com") (:connection-type . ssl)) )))
  '(jabber-alert-info-message-hooks (quote (jabber-info-display)))
  '(jabber-alert-message-hooks (quote (jabber-message-libnotify jabber-message-beep jabber-message-wave jabber-message-echo jabber-message-display jabber-message-scroll)))
  '(jabber-alert-message-wave "/Users/dcameron/Twinkles.wav")
@@ -74,9 +76,4 @@
  '(tool-bar-mode nil))
 
 (put 'narrow-to-region 'disabled nil)
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "white" :foreground "black" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 94 :width normal :foundry "unknown" :family "Menlo")))))
+

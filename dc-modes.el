@@ -109,7 +109,7 @@ Null prefix argument turns off the mode."
   (progn ;; Aquamacs has all of this already
     ;; Load slime
     (setq inferior-lisp-program "/usr/bin/sbcl")
-    (add-to-list 'load-path "~/elisp/slime/")
+    (add-to-list 'load-path "/usr/share/emacs/site-lisp/slime")
     (require 'slime-autoloads)
     (slime-setup '(slime-fancy))
 

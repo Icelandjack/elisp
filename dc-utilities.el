@@ -174,9 +174,12 @@ region into long lines."
 (setq http-post-timeout 120)
 
 (defun url-request (key-value-pairs)
-  (mapconcat (lambda (a) (concat (url-hexify-string (first a)) "="
-                                 (url-hexify-string (second a))))
-             key-value-pairs "&"))
+  (if (string= (first (first key-value-pairs))
+               "POSTDATA")
+      (second (first key-value-pairs))
+    (mapconcat (lambda (a) (concat (url-hexify-string (first a)) "="
+                                   (url-hexify-string (second a))))
+               key-value-pairs "&")))
 
 
 ;; Post to URL. Returns a string with the raw response from the HTTP
@@ -187,7 +190,7 @@ region into long lines."
   (when (not (member type '(:get :post)))
     (error "Type must be :get or :post"))
   (let ((url-request-method (substring (upcase (symbol-name type)) 1))
-        (url-request-extra-headers (when (eql type :post)
+        (url-request-extra-headers (when (and (eql type :post) (not headers))
                                      '(("Content-type" .
                                         "application/x-www-form-urlencoded"))))
         (url-request-data (when (and (eql type :post) args)
@@ -649,9 +652,7 @@ like '4h' and are always at the end of a line."
 (defun check-clock-buffer (buffer)
   "This function checks my work.org buffer to make sure that work
    times don't overlap and that the times are calculated
-   correctly everywhere. I run this function before posting
-   updates to the wiki page at
-   https://wiki.vindicia.com/display/~dcameron/dc-timecard"
+   correctly everywhere."
   (let ((l nil)
         (rets "\\[\\([0-9][-0-9]+\\)[^0-9]+\\([:0-9]+\\)\\]")
         (resp ".*=> *\\([:0-9]+\\)")
@@ -718,123 +719,6 @@ like '4h' and are always at the end of a line."
     (switch-to-buffer-other-window buffer)
     ""))
 
-(defun document-perl-program ()
-  (interactive)
-  (let ((start (point-max)))
-    (goto-char start)
-    (insert "
-
-=head1 NAME
-
-name - description
-
-=head1 SYNOPSIS
-
-name [options] [file]
-
-=head1 OPTIONS
-
-=over 8
-
-=item B<--help>|B<-h>
-
-Print this documentation.
-
-=item B<--brief>|B<-b>
-
-Print the most relevant text of each new line in the log
-file. This makes the log much easier to read, but excludes a lot
-of text from each log line.
-
-=back
-
-=head1 DESCRIPTION
-
-This program will tail any new file that appears in the Cashbox
-log directory, typically /var/vindicia/logs or ~/vindicia/logs.
-
-=cut
-
-")
-    (goto-char start)
-    (next-line 4)
-    (goto-char (point-at-bol))))
-
-(defun vindicia-svn-index (url)
-  (let* ((regex "<a href=\"\\([^\"]+\\)\">\\(.+?\\)</a>")
-         (absolute-url (join-paths vindicia-svn-root url))
-         (authorization `(("Authorization" (,vindicia-username
-                                            ,vindicia-password))))
-         (response (http-request :get absolute-url nil authorization))
-         (result (mapcar (lambda (s)
-                           (string-match regex s)
-                           (concat
-                            "[[" (join-paths absolute-url (match-string 1 s))
-                            "][" (match-string 2 s) "]]"))
-                         (remove-if-not
-                          (lambda(s)
-                            (and (string-match regex s)
-                                 (not (member (match-string 2 s)
-                                              '(".." "Subversion")))))
-                          (split-string (second response) "\n"))))
-        (content-buffer (or (get-buffer "web-service-response")
-                            (generate-new-buffer "web-service-response")))
-        (headers-buffer (or (get-buffer "web-service-headers")
-                            (generate-new-buffer "web-service-headers"))))
-    (with-current-buffer headers-buffer
-      (conf-mode)
-      (erase-buffer)
-      (goto-char (point-min))
-      (insert (first response))
-      (goto-char (point-min)))
-    (with-current-buffer content-buffer
-      (erase-buffer)
-      (goto-char (point-min))
-      (insert (concat absolute-url "\n\n"))
-      (loop for line in result do (insert (concat "  " line "\n")))
-      (goto-char (point-min))
-      (org-mode))))
-
-(defun vindicia-svn-file (url)
-  (let* ((content-buffer (or (get-buffer "web-service-response")
-                             (generate-new-buffer "web-service-response")))
-         (headers-buffer (or (get-buffer "web-service-headers")
-                             (generate-new-buffer "web-service-headers")))
-         (absolute-url (join-paths vindicia-svn-root url))
-         (authorization `(("Authorization" (,vindicia-username
-                                            ,vindicia-password))))
-         (response (http-request :get absolute-url nil authorization))
-         (result (second response)))
-    (with-current-buffer headers-buffer
-      (conf-mode)
-      (erase-buffer)
-      (goto-char (point-min))
-      (insert (first response))
-      (goto-char (point-min)))
-    (with-current-buffer content-buffer
-      (erase-buffer)
-      (goto-char (point-min))
-      (fundamental-mode)
-      (insert (concat absolute-url "\n\n"))
-      (insert result)
-      (goto-char (point-min))
-      (cond ((or (string-match "\\.\\(pl\\|pm\\)$" url) 
-                  (string-match "^.+perl" result))
-              (cperl-mode))
-            ((or (string-match "\\.xml$" url)
-                 (string-match "^<\\?xml" result))
-             (nxml-mode))
-            (t nil)))))
-
-(defun open-vindicia-svn-file ()
-  (interactive)
-  (goto-char (+ (point-at-bol) 5))
-  (let ((url (second (split-string (thing-at-point-url-at-point)
-                                   vindicia-svn-root))))
-    (if (string-match "/$" url)
-        (vindicia-svn-index url)
-      (vindicia-svn-file url))))
-   
 (defun clear-buffer (buffer)
   (interactive "b")
   (with-current-buffer buffer
