@@ -1,3 +1,4 @@
+(global-set-key (kbd "s-u") 'revert-buffer)
 (global-set-key (kbd "C-c #") 'four-digit-hex-number)
 (global-set-key (kbd "s-<return>") 'fullscreen)
 

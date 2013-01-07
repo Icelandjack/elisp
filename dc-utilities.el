@@ -174,12 +174,21 @@ region into long lines."
 (setq http-post-timeout 120)
 
 (defun url-request (key-value-pairs)
-  (if (string= (first (first key-value-pairs))
-               "POSTDATA")
-      (second (first key-value-pairs))
     (mapconcat (lambda (a) (concat (url-hexify-string (first a)) "="
                                    (url-hexify-string (second a))))
-               key-value-pairs "&")))
+               key-value-pairs "&"))
+
+
+;; (defun url-request (key-value-pairs)
+;;   (cond (((member (first (first key-value-pairs)) '(:postdata :putdata))
+;;           (string = (second (first key-value-pairs)))
+;;          ((eql (first (first key-value-pairs)) :multipart/form-data)
+;;           (let ((boundary "d70b5650"))
+;;             (loop for key-value in key-value-pairs
+;;                   for filename = (if (getf value :file)
+;;     (mapconcat (lambda (a) (concat (url-hexify-string (first a)) "="
+;;                                    (url-hexify-string (second a))))
+;;                key-value-pairs "&")))
 
 
 ;; Post to URL. Returns a string with the raw response from the HTTP
@@ -187,10 +196,12 @@ region into long lines."
 (defun http-request (type url &optional args headers)
   "Sends GET or POST HTTP request to given URL with optional
    arguments and header."
-  (when (not (member type '(:get :post)))
-    (error "Type must be :get or :post"))
+  (when (not (member type '(:get :post :put :delete)))
+    (error (format "Type (%s) must be :get, :post, :put, or :delete" type)))
   (let ((url-request-method (substring (upcase (symbol-name type)) 1))
-        (url-request-extra-headers (when (and (eql type :post) (not headers))
+        (url-request-extra-headers (when (and (or (equal type :post)
+                                                  (equal type :put))
+                                              (not headers))
                                      '(("Content-type" .
                                         "application/x-www-form-urlencoded"))))
         (url-request-data (when (and (eql type :post) args)
@@ -199,6 +210,7 @@ region into long lines."
                          (concat url (when args
                                        (concat "?" (url-request args))))
                        url)))
+    (print (string-join "; " (flatten url-request-extra-headers)))
     (when headers
       (loop for (key value) in headers
             for xvalue = (cond
@@ -766,5 +778,49 @@ like '4h' and are always at the end of a line."
              (revert-buffer t noconfirm))
         collect buffer))
 
+;; (defun dc-play-sound (filename)
+;;   (async-shell-command (concat "aplay '" filename "'")))
+
 (defun dc-play-sound (filename)
-  (shell-command (concat "afplay '" filename "'")))
+  (when filename
+    (start-process "dc-play-sound" nil "aplay" filename)))
+
+;; /usr/lib/libreoffice/share/gallery/sounds/apert.wav
+;; /usr/lib/libreoffice/share/gallery/sounds/untie.wav
+(defun dc-play-this-sound ()
+  (interactive)
+  (let ((file (buffer-substring (point-at-bol) (point-at-eol))))
+    (dc-play-sound file)))
+
+(global-set-key (kbd "s-p") 'dc-play-this-sound)
+
+(defun minutes-to-fractions (buffer)
+  (let (matches)
+    (with-current-buffer buffer
+      (goto-char (point-min))
+      (while (re-search-forward ":\\([0-9][0-9]\\)" nil t)
+        (let* ((match (match-string 1))
+               (minutes (string-to-number (match-string 1)))
+               (fraction-of-hour (/ minutes 60.0))
+               (formatted-fraction (substring (format "%0.2f" fraction-of-hour) 1)))
+          (replace-match formatted-fraction))))))
+
+;; (defun set-erc-sound (file)
+;;   (let ((new-hooks (loop for index from 0 below (length erc-insert-post-hook)
+;;                          for hook = (nth index erc-insert-post-hook)
+;;                          unless (string-match "dc-play-sound" (format "%a" hook))
+;;                          collect hook)))
+;;     (add-to-list 'erc-insert-post-hook
+;;                  (lambda (x) (dc-play-sound file))
+;;     (setq erc-insert-post-hook new-hooks)
+        
+(defun dc-erc-sound-function ()
+  (unless dc-erc-mute
+    (let ((message (buffer-substring (point-min) (point-max))))
+      (when (string-match "^<[^>]+> .+" message)
+        (dc-play-sound dc-erc-sound-file)))))
+
+;; (defun dc-erc-bot ()
+;;   (if dc-erc-bot-enabled
+  
+(add-to-list 'erc-insert-modify-hook 'dc-erc-sound-function)

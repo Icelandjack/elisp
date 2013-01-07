@@ -1,7 +1,5 @@
 ;; (load "~/elisp/nxhtml/autostart")
 
-(require 'cl)
-
 ;; Org-mode settings (these have to be set before org is ever loaded)
 (setf org-hide-leading-stars t)
 (setf org-replace-disputed-keys t)
@@ -23,6 +21,11 @@
 
 ;; For returning to a window configuration
 (winner-mode t)
+
+;; Emacs IRC (erc)
+(require 'erc)
+(require 'tls)
+(defun dc-erc-log-file-name (a b c d e) "erc.log")
 
 ;;
 ;; Emacs Jabber
