@@ -9,40 +9,6 @@
 ;;     (shell-command (format "./re.pl --rcfile %s" rcfile))
 ;;     (eshell/cd old-directory)))
         
-(defun open-files (dry-run)
-  (let* ((files '(
-
-                  "//vindicia/db/vindicia_classes.xml"
-                  "//Obj/Entity/MerchantCustomer.pm"
-                  "//Obj/Entity/AutoBill.pm"
-                  "//Obj/EntitlementLedger.pm"
-                  "//QA/ObjTest.pm"
-                  "//unit_tests/Obj/Entity/ab_seasonal.t"
-                  "//unit_tests/Obj/Entity/ent.yaml"
-                  "//t/ce.pl"
-                  "//t/ce.dat"
-
-                  ))
-         (shortcuts '(("//vindicia" "/base-path")
-                      ("//Obj" "/base-path/site_perl/Vindicia/Obj")
-                      ("//QA" "/base-path/site_perl/Vindicia/QA")
-                      ("//unit_tests"
-                       "/base-path/qa/server/unit_tests/site_perl/Vindicia/")
-                      ("//t" "/ssh:dcameron@alejandra#4007:/home/dcameron/t/")))
-         (paths (loop for file in files
-                      for name = (loop for shortcut in shortcuts
-                                       when (string-match
-                                             (concat "^" (car shortcut)) file)
-                                       do (return (replace-match
-                                                   (second shortcut) t t file)))
-                      collect (if (string-match "^/base-path" name)
-                                  (replace-match vindicia-base-path t t name)
-                                name))))
-    (loop for path in paths
-          when (not dry-run)
-          do (find-file-other-window path)
-          collect path)))
-
 (defun document-function ()
   (interactive)
   (insert "#
@@ -233,3 +199,156 @@
          (",$" "" t)
 
 )))))
+
+
+
+;; (defun document-perl-program ()
+;;   (interactive)
+;;   (let ((start (point-max)))
+;;     (goto-char start)
+;;     (insert "
+
+;; =head1 NAME
+
+;; name - description
+
+;; =head1 SYNOPSIS
+
+;; name [options] [file]
+
+;; =head1 OPTIONS
+
+;; =over 8
+
+;; =item B<--help>|B<-h>
+
+;; Print this documentation.
+
+;; =item B<--brief>|B<-b>
+
+;; Print the most relevant text of each new line in the log
+;; file. This makes the log much easier to read, but excludes a lot
+;; of text from each log line.
+
+;; =back
+
+;; =head1 DESCRIPTION
+
+;; This program will tail any new file that appears in the Cashbox
+;; log directory, typically /var/vindicia/logs or ~/vindicia/logs.
+
+;; =cut
+
+;; ")
+;;     (goto-char start)
+;;     (next-line 4)
+;;     (goto-char (point-at-bol))))
+
+;; (defun vindicia-svn-index (url)
+;;   (let* ((regex "<a href=\"\\([^\"]+\\)\">\\(.+?\\)</a>")
+;;          (absolute-url (join-paths vindicia-svn-root url))
+;;          (authorization `(("Authorization" (,vindicia-username
+;;                                             ,vindicia-password))))
+;;          (response (http-request :get absolute-url nil authorization))
+;;          (result (mapcar (lambda (s)
+;;                            (string-match regex s)
+;;                            (concat
+;;                             "[[" (join-paths absolute-url (match-string 1 s))
+;;                             "][" (match-string 2 s) "]]"))
+;;                          (remove-if-not
+;;                           (lambda(s)
+;;                             (and (string-match regex s)
+;;                                  (not (member (match-string 2 s)
+;;                                               '(".." "Subversion")))))
+;;                           (split-string (second response) "\n"))))
+;;         (content-buffer (or (get-buffer "web-service-response")
+;;                             (generate-new-buffer "web-service-response")))
+;;         (headers-buffer (or (get-buffer "web-service-headers")
+;;                             (generate-new-buffer "web-service-headers"))))
+;;     (with-current-buffer headers-buffer
+;;       (conf-mode)
+;;       (erase-buffer)
+;;       (goto-char (point-min))
+;;       (insert (first response))
+;;       (goto-char (point-min)))
+;;     (with-current-buffer content-buffer
+;;       (erase-buffer)
+;;       (goto-char (point-min))
+;;       (insert (concat absolute-url "\n\n"))
+;;       (loop for line in result do (insert (concat "  " line "\n")))
+;;       (goto-char (point-min))
+;;       (org-mode))))
+
+;; (defun vindicia-svn-file (url)
+;;   (let* ((content-buffer (or (get-buffer "web-service-response")
+;;                              (generate-new-buffer "web-service-response")))
+;;          (headers-buffer (or (get-buffer "web-service-headers")
+;;                              (generate-new-buffer "web-service-headers")))
+;;          (absolute-url (join-paths vindicia-svn-root url))
+;;          (authorization `(("Authorization" (,vindicia-username
+;;                                             ,vindicia-password))))
+;;          (response (http-request :get absolute-url nil authorization))
+;;          (result (second response)))
+;;     (with-current-buffer headers-buffer
+;;       (conf-mode)
+;;       (erase-buffer)
+;;       (goto-char (point-min))
+;;       (insert (first response))
+;;       (goto-char (point-min)))
+;;     (with-current-buffer content-buffer
+;;       (erase-buffer)
+;;       (goto-char (point-min))
+;;       (fundamental-mode)
+;;       (insert (concat absolute-url "\n\n"))
+;;       (insert result)
+;;       (goto-char (point-min))
+;;       (cond ((or (string-match "\\.\\(pl\\|pm\\)$" url) 
+;;                   (string-match "^.+perl" result))
+;;               (cperl-mode))
+;;             ((or (string-match "\\.xml$" url)
+;;                  (string-match "^<\\?xml" result))
+;;              (nxml-mode))
+;;             (t nil)))))
+
+;; (defun open-vindicia-svn-file ()
+;;   (interactive)
+;;   (goto-char (+ (point-at-bol) 5))
+;;   (let ((url (second (split-string (thing-at-point-url-at-point)
+;;                                    vindicia-svn-root))))
+;;     (if (string-match "/$" url)
+;;         (vindicia-svn-index url)
+;;       (vindicia-svn-file url))))
+   
+;; (defun open-files (dry-run)
+;;   (let* ((files '(
+
+;;                   "//vindicia/db/vindicia_classes.xml"
+;;                   "//Obj/Entity/MerchantCustomer.pm"
+;;                   "//Obj/Entity/AutoBill.pm"
+;;                   "//Obj/EntitlementLedger.pm"
+;;                   "//QA/ObjTest.pm"
+;;                   "//unit_tests/Obj/Entity/ab_seasonal.t"
+;;                   "//unit_tests/Obj/Entity/ent.yaml"
+;;                   "//t/ce.pl"
+;;                   "//t/ce.dat"
+
+;;                   ))
+;;          (shortcuts '(("//vindicia" "/base-path")
+;;                       ("//Obj" "/base-path/site_perl/Vindicia/Obj")
+;;                       ("//QA" "/base-path/site_perl/Vindicia/QA")
+;;                       ("//unit_tests"
+;;                        "/base-path/qa/server/unit_tests/site_perl/Vindicia/")
+;;                       ("//t" "/ssh:dcameron@alejandra#4007:/home/dcameron/t/")))
+;;          (paths (loop for file in files
+;;                       for name = (loop for shortcut in shortcuts
+;;                                        when (string-match
+;;                                              (concat "^" (car shortcut)) file)
+;;                                        do (return (replace-match
+;;                                                    (second shortcut) t t file)))
+;;                       collect (if (string-match "^/base-path" name)
+;;                                   (replace-match vindicia-base-path t t name)
+;;                                 name))))
+;;     (loop for path in paths
+;;           when (not dry-run)
+;;           do (find-file-other-window path)
+;;           collect path)))

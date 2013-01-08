@@ -1,7 +1,5 @@
 ;; (load "~/elisp/nxhtml/autostart")
 
-(require 'cl)
-
 ;; Org-mode settings (these have to be set before org is ever loaded)
 (setf org-hide-leading-stars t)
 (setf org-replace-disputed-keys t)
@@ -28,6 +26,11 @@
 (add-to-list 'load-path "~/elisp/livescript-mode")
 (require 'livescript-mode)
 (define-key livescript-mode-map "\C-c\C-l" 'livescript-compile-buffer)
+
+;; Emacs IRC (erc)
+(require 'erc)
+(require 'tls)
+(defun dc-erc-log-file-name (a b c d e) dc-erc-log)
 
 ;;
 ;; Emacs Jabber
@@ -145,7 +148,23 @@ Null prefix argument turns off the mode."
 ;; Selection deleted when key pressed
 (delete-selection-mode 1)
 
+;; Zoom
+(defun zoom-in () (interactive) (text-scale-increase 1))
+(defun zoom-out () (interactive) (text-scale-increase -1))
+(global-set-key [?\C--] 'zoom-out)
+(global-set-key [?\C-=] 'zoom-in)
 
+;; Cut and Paste
+(global-set-key "\C-w" 'clipboard-kill-region)
+(global-set-key "\M-w" 'clipboard-kill-ring-save)
+(global-set-key "\C-y" 'clipboard-yank)
+
+;; Blinking red cursor (when viewed with inverse rendering)
+;; (set-cursor-color 'cyan)
+(blink-cursor-mode t)
+
+;; Selection deleted when key pressed
+(delete-selection-mode 1)))
 
 ;; Open *.t files in cperl-mode
 (add-to-list 'auto-mode-alist '("\\.t\\'" . cperl-mode))
