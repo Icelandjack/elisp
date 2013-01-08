@@ -22,39 +22,10 @@
 ;; For returning to a window configuration
 (winner-mode t)
 
-;; LiveScript
-(add-to-list 'load-path "~/elisp/livescript-mode")
-(require 'livescript-mode)
-(define-key livescript-mode-map "\C-c\C-l" 'livescript-compile-buffer)
-
 ;; Emacs IRC (erc)
 (require 'erc)
 (require 'tls)
 (defun dc-erc-log-file-name (a b c d e) dc-erc-log)
-
-;;
-;; Emacs Jabber
-;; Begin
-(require 'hexrgb)
-;; adjust this path:
-(add-to-list 'load-path "~/elisp/jabber")
-;;"~/elisp/emacs-jabber-0.8.91")
-;; For 0.7.90 and above:
-(require 'jabber-autoloads)
-(require 'jabber-presence)
-;; End
-
-;; For webjump
-(require 'webjump)
-(add-to-list 
- 'webjump-sites
- '("Vindicia Issue" .
-   [simple-query "https://support.vindicia.com"
-                 "https://support.vindicia.com/browse/"
-                 ""]))
-(add-to-list
- 'webjump-sites
- '("Vindicia Issues" . "https://support.vindicia.com"))
 
 ;; Disabling auto-saves
 (define-minor-mode sensitive-mode
@@ -164,7 +135,7 @@ Null prefix argument turns off the mode."
 (blink-cursor-mode t)
 
 ;; Selection deleted when key pressed
-(delete-selection-mode 1)))
+(delete-selection-mode 1)
 
 ;; Open *.t files in cperl-mode
 (add-to-list 'auto-mode-alist '("\\.t\\'" . cperl-mode))
