@@ -1,3 +1,91 @@
+2012-10-14  Helmut Eller  <heller@common-lisp.net>
+
+	* slime.el (slime-insert-threads): Some cleanups.
+	(slime-insert-table, slime-insert-table-row)
+	(slime-transpose-lists) New helpers.
+	(slime-threads-table-properties): Renamed from
+	*slime-threads-table-properties*
+	(slime-thread-index-to-id, slime-longest-lines)
+	(slime-format-threads-labels, slime-insert-thread): Deleted.
+
+2012-10-14  Helmut Eller  <heller@common-lisp.net>
+
+	Avoid some unused variable warnings.
+
+	* slime.el (slime-xref-group, slime-all-contribs, [selector] ??):
+	Use _ as prefix or in loop-destructuring: (loop for (nil) in ...).
+
+2012-10-14  Helmut Eller  <heller@common-lisp.net>
+
+	* slime.el (slime-goto-source-location-buffer-and-file): Delete
+	unused function.
+
+2012-10-14  Helmut Eller  <heller@common-lisp.net>
+	Avoid flet.
+
+	* slime.el (with-struct, slime-compute-policy)
+	(slime-create-note-overlay, slime-merge-note-into-overlay)
+	(slime-file-name-merge-source-root)
+	(slime-highlight-differences-in-dirname)
+	(slime-check-location-filename-sanity, slime-macroexpand-undo)
+	(slime-read-connection)
+	(slime-inspector-property-at-point): Use macrolet or a
+	comibination of let and funcall as replacement for flet.
+
+2012-10-14  Helmut Eller  <heller@common-lisp.net>
+	Avoid labels.
+
+	* hyperspec.el (hyperspec--get-one-line): New function.
+
+2012-10-14  Helmut Eller  <heller@common-lisp.net>
+
+	* swank.lisp (close-connection%): Let *debugger-hook* be nil
+	across the entire function to that we don't call our own debugger
+	if we ever get some error during CLOSE or somesuch.
+
+2012-09-04  Stas Boukarev  <stassats@gmail.com>
+
+	* swank-loader.lisp (lisp-version-string): Add "s" to Allegro with
+	SMP support.
+	Patch by Dave Cooper.
+
+2012-08-18  Stas Boukarev  <stassats@gmail.com>
+
+	* swank-abcl.lisp (find-definitions): Call ext:resolve before
+	finding definitions, for the symbol may be not autoloaded yet.
+
+2012-08-04  Stas Boukarev  <stassats@gmail.com>
+
+	* swank-sbcl.lisp (call-with-debugging-environment): Use
+	sb-debug::resolve-stack-top-hint instead of just
+	sb-debug:*stack-top-hint*, because now it can contain things other
+	than just frames.
+	* clean up: (signal (make-condition ...)) => (signal ...)
+
+2012-07-13  Helmut Eller  <heller@common-lisp.net>
+
+	* slime.el: Don't compile functions that are now in other files.
+
+2012-06-19  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-ecl.lisp (wait-for-input): Provide implementation
+	that doesn't need serve-event.
+
+2012-06-12  Stas Boukarev  <stassats@gmail.com>
+
+	* slime.el (slime-changelog-date): Use
+	(expand-file-name "ChangeLog" slime-path) instead of
+	(concat slime-path "ChangeLog"), slime-path may not have a
+	trailing /.
+	Reported by Paul Sexton (lp#1011935).
+
+2012-05-25  Stas Boukarev  <stassats@gmail.com>
+
+	* slime.el (slime-oneliner): Use minibuffer width instead of the
+	width of the current frame, minibuffer can be in a separate frame
+	with a different width.
+	Patch by Greg Pfeil (lp#1004252).
+
 2012-05-21  Helmut Eller  <heller@common-lisp.net>
 
 	Reduce dependecy on pre-defined faces.

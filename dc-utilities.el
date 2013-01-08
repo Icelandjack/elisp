@@ -1,4 +1,3 @@
-
 ;; Atlassian Confluence Wiki Utilities
 ;; begin
 (defun replace-heading-markers (old new)
@@ -778,12 +777,21 @@ like '4h' and are always at the end of a line."
              (revert-buffer t noconfirm))
         collect buffer))
 
-;; (defun dc-play-sound (filename)
-;;   (async-shell-command (concat "aplay '" filename "'")))
-
 (defun dc-play-sound (filename)
   (when filename
-    (start-process "dc-play-sound" nil "aplay" filename)))
+    (let ((default-directory "/"))
+      (start-process "dc-play-sound" nil dc-sound-program filename))))
+
+(defun dc-add-time-spans (time-spans)
+  (let* ((time-span-list (if (listp time-spans)
+                             time-spans
+                           (split-string time-spans " +")))
+         (times (loop for time-span in time-span-list
+                      for match = (string-match "\\([0-9]+\\)\\:\\([0-9]+\\)" time-span)
+                      for hours = (string-to-number (match-string 1 time-span))
+                      for minutes = (string-to-number (match-string 2 time-span))
+                      collect (+ hours (/ minutes 60.0)))))
+    (apply '+ times)))
 
 ;; /usr/lib/libreoffice/share/gallery/sounds/apert.wav
 ;; /usr/lib/libreoffice/share/gallery/sounds/untie.wav
