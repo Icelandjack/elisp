@@ -24,14 +24,21 @@
 ;; For returning to a window configuration
 (winner-mode t)
 
+;; LiveScript
+(add-to-list 'load-path "~/elisp/livescript-mode")
+(require 'livescript-mode)
+(define-key livescript-mode-map "\C-c\C-l" 'livescript-compile-buffer)
+
 ;;
 ;; Emacs Jabber
 ;; Begin
 (require 'hexrgb)
 ;; adjust this path:
-(add-to-list 'load-path "~/elisp/emacs-jabber-0.8.91")
+(add-to-list 'load-path "~/elisp/jabber")
+;;"~/elisp/emacs-jabber-0.8.91")
 ;; For 0.7.90 and above:
 (require 'jabber-autoloads)
+(require 'jabber-presence)
 ;; End
 
 ;; For webjump
@@ -98,48 +105,45 @@ Null prefix argument turns off the mode."
 
 ;; ;; Edit server for Chrome
 (require 'edit-server)
+(setq edit-server-new-frame t)
+(setq edit-server-new-frame-alist 
+      '((width . 80)
+        (height . 40)))
 (edit-server-start)
 
-(if this-is-aquamacs
-    (progn 
-      ;; Slime and SBCL in Mac OS X
-      (setq inferior-lisp-program "/usr/local/bin/sbcl"))
+;; Load slime
+(setq inferior-lisp-program "/usr/bin/sbcl --dynamic-space-size 10000")
+(add-to-list 'load-path "~/elisp/slime/")
+(require 'slime-autoloads)
+(slime-setup '(slime-fancy))
 
+;; Enable full-screen
+(defun fullscreen (&optional f)
+  (interactive)
+  (if (functionp 'ns-toggle-fullscreen)
+      (ns-toggle-fullscreen)
+    (set-frame-parameter f 'fullscreen
+                         (if (frame-parameter f 'fullscreen) nil 'fullboth))))
+(global-set-key [f11] 'fullscreen)
+(add-hook 'after-make-frame-functions 'fullscreen)
 
-  (progn ;; Aquamacs has all of this already
-    ;; Load slime
-    (setq inferior-lisp-program "/usr/bin/sbcl")
-    (add-to-list 'load-path "~/elisp/slime/")
-    (require 'slime-autoloads)
-    (slime-setup '(slime-fancy))
+;; Zoom
+(defun zoom-in () (interactive) (text-scale-increase 1))
+(defun zoom-out () (interactive) (text-scale-increase -1))
+(global-set-key [?\C--] 'zoom-out)
+(global-set-key [?\C-=] 'zoom-in)
 
-    ;; Enable full-screen
-    (defun fullscreen (&optional f)
-      (interactive)
-      (if (functionp 'ns-toggle-fullscreen)
-          (ns-toggle-fullscreen)
-        (set-frame-parameter f 'fullscreen
-                             (if (frame-parameter f 'fullscreen) nil 'fullboth))))
-    (global-set-key [f11] 'fullscreen)
-    (add-hook 'after-make-frame-functions 'fullscreen)
+;; Cut and Paste
+(global-set-key "\C-w" 'clipboard-kill-region)
+(global-set-key "\M-w" 'clipboard-kill-ring-save)
+(global-set-key "\C-y" 'clipboard-yank)
 
-    ;; Zoom
-    (defun zoom-in () (interactive) (text-scale-increase 1))
-    (defun zoom-out () (interactive) (text-scale-increase -1))
-    (global-set-key [?\C--] 'zoom-out)
-    (global-set-key [?\C-=] 'zoom-in)
+;; Blinking red cursor (when viewed with inverse rendering)
+;; (set-cursor-color 'cyan)
+(blink-cursor-mode t)
 
-    ;; Cut and Paste
-    (global-set-key "\C-w" 'clipboard-kill-region)
-    (global-set-key "\M-w" 'clipboard-kill-ring-save)
-    (global-set-key "\C-y" 'clipboard-yank)
-
-    ;; Blinking red cursor (when viewed with inverse rendering)
-    ;; (set-cursor-color 'cyan)
-    (blink-cursor-mode t)
-
-    ;; Selection deleted when key pressed
-    (delete-selection-mode 1)))
+;; Selection deleted when key pressed
+(delete-selection-mode 1)
 
 
 

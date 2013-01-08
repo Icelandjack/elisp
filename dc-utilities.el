@@ -1,4 +1,3 @@
-
 ;; Atlassian Confluence Wiki Utilities
 ;; begin
 (defun replace-heading-markers (old new)
@@ -883,4 +882,18 @@ log directory, typically /var/vindicia/logs or ~/vindicia/logs.
         collect buffer))
 
 (defun dc-play-sound (filename)
-  (shell-command (concat "afplay '" filename "'")))
+  (let ((default-directory "/"))
+    (shell-command (concat dc-sound-program " '" filename "'"))))
+
+(defun dc-add-time-spans (time-spans)
+  (let* ((time-span-list (if (listp time-spans)
+                             time-spans
+                           (split-string time-spans " +")))
+         (times (loop for time-span in time-span-list
+                      for match = (string-match "\\([0-9]+\\)\\:\\([0-9]+\\)" time-span)
+                      for hours = (string-to-number (match-string 1 time-span))
+                      for minutes = (string-to-number (match-string 2 time-span))
+                      collect (+ hours (/ minutes 60.0)))))
+    (apply '+ times)))
+              
+          
