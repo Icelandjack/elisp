@@ -820,7 +820,23 @@ like '4h' and are always at the end of a line."
       (when (string-match "^<[^>]+> .+" message)
         (dc-play-sound dc-erc-sound-file)))))
 
-;; (defun dc-erc-bot ()
-;;   (if dc-erc-bot-enabled
+(defun dc-erc-repl ()
+  (if dc-erc-repl-enabled
+    (let ((message (buffer-substring (point-min) (point-max)))
+          (regex (format "^<\\([^>]+\\)> %s:\\(.+\\)$" dc-erc-bot-name)))
+      (when (string-match regex message)
+        (let* ((user (match-string 1 message))
+               (message (match-string 2 message))
+               (reply (dc-erc-process-message user message)))
+          (when reply (erc-send-message reply)))))))
+
+(defun dc-erc-process-message (user message)
+  nil)
+  
+
+;; Put this in your .local-settings.el file:
+;; (setq dc-erc-repl-enabled t)
+;; (setq dc-erc-bot-name "vixen")
   
 (add-to-list 'erc-insert-modify-hook 'dc-erc-sound-function)
+(add-to-list 'erc-insert-modify-hook 'dc-erc-repl)
