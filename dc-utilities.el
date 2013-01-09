@@ -839,12 +839,11 @@ like '4h' and are always at the end of a line."
           (when reply (erc-send-message reply)))))))
 
 (defun dc-erc-process-message (user message)
-  nil)
-  
-
-;; Put this in your .local-settings.el file:
-;; (setq dc-erc-repl-enabled t)
-;; (setq dc-erc-bot-name "vixen")
+  (format "%s: %s" user (eval (read message))))
   
 (add-to-list 'erc-insert-modify-hook 'dc-erc-sound-function)
 (add-to-list 'erc-insert-modify-hook 'dc-erc-repl)
+
+;; Put these in .local-settings.el
+;; (setq dc-erc-repl-enabled t)
+;; (setq dc-erc-bot-name "vixen")
