@@ -57,7 +57,7 @@
  '(ediff-split-window-function (quote split-window-horizontally))
  '(ediff-window-setup-function (quote ediff-setup-windows-plain))
  '(erc-autoaway-message "I might be gone")
- '(erc-autoaway-mode t)
+ '(erc-autoaway-mode nil)
  '(erc-autojoin-channels-alist (quote (("irc.socialtext.net" "#dev"))))
  '(erc-autojoin-delay 15)
  '(erc-autojoin-mode t)
@@ -105,9 +105,3 @@
 
 (put 'narrow-to-region 'disabled nil)
 
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "white" :foreground "black" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 68 :width normal :foundry "unknown" :family "Liberation Mono")))))
