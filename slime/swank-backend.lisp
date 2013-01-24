@@ -840,8 +840,9 @@ symbol. The recognised keys are:
   :TYPE :CLASS :ALIEN-TYPE :ALIEN-STRUCT :ALIEN-UNION :ALIEN-ENUM
 
 The value of each property is the corresponding documentation string,
-or :NOT-DOCUMENTED. It is legal to include keys not listed here (but
-slime-print-apropos in Emacs must know about them).
+or NIL (or the obsolete :NOT-DOCUMENTED). It is legal to include keys
+not listed here (but slime-print-apropos in Emacs must know about
+them).
 
 Properties should be included if and only if they are applicable to
 the symbol. For example, only (and all) fbound symbols should include
@@ -1346,6 +1347,7 @@ Don't execute unwind-protected sections, don't raise conditions.
 
 (definterface send (thread object)
   "Send OBJECT to thread THREAD."
+  (declare (ignore thread))
   object)
 
 (definterface receive (&optional timeout)
@@ -1365,6 +1367,7 @@ If THREAD is nil delete the association."
 (definterface find-registered (name)
   "Find the thread that was registered for the symbol NAME.
 Return nil if the no thread was registred or if the tread is dead."
+  (declare (ignore name))
   nil)
 
 (definterface set-default-initial-binding (var form)
@@ -1498,3 +1501,8 @@ RESTART-FUNCTION, if non-nil, should be called when the image is loaded.")
   "Request saving a heap image to the file FILENAME.
 RESTART-FUNCTION, if non-nil, should be called when the image is loaded.
 COMPLETION-FUNCTION, if non-nil, should be called after saving the image.")
+
+(defun deinit-log-output ()
+  ;; Can't hang on to an fd-stream from a previous session.
+  (setf (symbol-value (find-symbol "*LOG-OUTPUT*" 'swank))
+        nil))

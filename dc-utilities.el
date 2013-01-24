@@ -780,7 +780,8 @@ like '4h' and are always at the end of a line."
 (defun dc-play-sound (filename)
   (when filename
     (let ((default-directory "/"))
-      (start-process "dc-play-sound" nil dc-sound-program filename))))
+      (start-process "dc-play-sound" nil dc-sound-program
+                     (if (stringp filename) filename (getf dc-sounds filename))))))
 
 (defun dc-add-time-spans (time-spans)
   (let* ((time-span-list (if (listp time-spans)
@@ -847,3 +848,44 @@ like '4h' and are always at the end of a line."
 ;; Put these in .local-settings.el
 ;; (setq dc-erc-repl-enabled t)
 ;; (setq dc-erc-bot-name "vixen")
+
+(defun copy-buffer-file-name ()
+  (interactive)
+  (kill-new (buffer-file-name))
+  (message (format "Copied to clipboard: %s"(buffer-file-name))))
+
+(global-set-key (kbd "C-s-f") 'copy-buffer-file-name)
+
+(defun invert-regex (regex)
+  (format "^((?!%s).)*$" regex))
+
+(defun invert-selected-regex (beg end)
+  (interactive "*r")
+  (save-restriction
+    (narrow-to-region beg end)
+    (let ((regex (buffer-substring (point-min) (point-max))))
+      (delete-region (point-min) (point-max))
+      (insert (invert-regex regex)))))
+
+(setf dc-file-prefix "/ssh:erin:/home/dcameron/src/st/socialtext")
+(setf dc-abs-path nil)
+
+(defun file-path-from-line ()
+  (interactive)
+  (let* ((filename (buffer-substring (point-at-bol) (point-at-eol)))
+         (abs-path (join-paths dc-file-prefix filename)))
+    (message abs-path)
+    (setf dc-abs-path abs-path)
+    (kill-new abs-path)))
+
+(defun dc-open-abs-path ()
+  (interactive)
+  (cond ((file-accessible-directory-p dc-abs-path)
+         (dired dc-abs-path))
+        ((file-exists-p dc-abs-path)
+         (find-file dc-abs-path))
+        (t (message-box
+            (format "Use s-C on a path before running this command.")))))
+
+(global-set-key (kbd "s-c") 'file-path-from-line)
+(global-set-key (kbd "s-v") 'dc-open-abs-path)
