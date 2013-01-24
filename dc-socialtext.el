@@ -1,3 +1,6 @@
+(setf dc-st-dev-credentials 
+      '(("Authorization" ("devnull1@socialtext.com" "d3vnu11l"))))
+
 ;; (setf socialtext-settings
 ;;       (list :host "stevim"
 ;;             :port 22000
@@ -70,3 +73,11 @@
 
 (global-set-key (kbd "s-f") 'insert-buffer-file-name)
 
+
+(defun query-dashboard (host)
+  (query-web-service :get (format "http://%s:21000/st/dashboard" host)
+                     nil dc-st-dev-credentials))
+
+(defun query-captcha (host)
+  (query-web-service :get (format "http://%s:21000/data/config/captcha" host)
+                     nil dc-st-dev-credentials))
