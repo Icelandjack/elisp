@@ -9,7 +9,6 @@
 (org-clock-persistence-insinuate)
 
 ;; For YAML
-(add-to-list 'load-path "~/elisp/yaml-mode")
 (require 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.yml" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.yaml" . yaml-mode))
