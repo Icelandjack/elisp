@@ -16,21 +16,14 @@
 ;;             :uri (format "https://%s:%d%s" host port path)
 ;;             :headers (append headers `(("Authorization" (,user ,pass))))
 
-(defun query-st-dev (type path args headers)
-  (let* ((host "stevim")
-         (port 22000)
+(defun query-st-dev (type path &optional args headers)
+  (let* ((host "erin")
+         (port 21000)
          (user "devnull1@socialtext.com")
          (pass "d3vnu11l")
-         (uri (format "https://%s:%d%s" host port path))
+         (uri (join-paths (format "http://%s:%d" host port) path))
          (headers (append headers `(("Authorization" (,user ,pass))))))
-    (query-web-service type url args headers)))
-
-(defun query-customjs (type &optional args headers)
-  (let* ((host "erin.hsd1.ca.comcast.net.")
-         (port 22000)
-         (url (format "https://%s:%d/data/workspaces/foobar/customjs"
-                      host port)))
-    (query-web-service type url args headers)))
+    (query-web-service type uri args headers)))
 
 ;; (defun query-widget (type &optional args headers)
 ;;   (let* ((host "erin.hsd1.ca.comcast.net.")
@@ -81,3 +74,35 @@
 (defun query-captcha (host)
   (query-web-service :get (format "http://%s:21000/data/config/captcha" host)
                      nil dc-st-dev-credentials))
+
+(defun params-to-hash (lambda-list params)
+  (when (not (zerop (mod (length params) 2)))
+    (error "params-to-hash parameter list is not of even length"))
+  (let ((hash (make-hash-table :test 'eql))
+        keys)
+        
+    (loop for a from 0 below (length lambda-list)
+          for key-spec = (elt lambda-list a)
+          for key = (if (listp key-spec) (car key-spec) key-spec)
+          for value = (when (listp key-spec) (second key-spec))
+          do
+          (puthash key value hash)
+          (push key keys))
+
+    (loop for a from 0 below (length params) by 2
+          for key = (elt params a)
+          for value = (elt params (1+ a))
+          when (not (member key keys))
+          do (error (format "Unkown parameter key %s" key))
+          do (puthash key value hash))
+
+    hash))
+    
+
+;; (defun dc-http-get (url &rest params)
+;;   "Makes an HTTP GET call to the give URL"
+;;   (let ((param (params-to-hash '(:
+;;   (let ((url-request-method "GET")
+;;         (url-request-extra-headers headers)
+
+  

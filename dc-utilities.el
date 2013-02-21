@@ -177,6 +177,7 @@ region into long lines."
                                    (url-hexify-string (second a))))
                key-value-pairs "&"))
 
+;; (defun muilti-part-mime-form
 
 ;; (defun url-request (key-value-pairs)
 ;;   (cond (((member (first (first key-value-pairs)) '(:postdata :putdata))
@@ -794,6 +795,12 @@ like '4h' and are always at the end of a line."
                       collect (+ hours (/ minutes 60.0)))))
     (apply '+ times)))
 
+(defun dc-float-to-time (hours)
+  (let* ((c-hours (floor hours))
+         (c-minutes (* (- hours c-hours) 60))
+         (c-seconds (* (- c-minutes (floor c-minutes)) 60)))
+    (format "%d:%02d:%02d" c-hours c-minutes c-seconds)))
+
 ;; /usr/lib/libreoffice/share/gallery/sounds/apert.wav
 ;; /usr/lib/libreoffice/share/gallery/sounds/untie.wav
 (defun dc-play-this-sound ()
@@ -823,10 +830,13 @@ like '4h' and are always at the end of a line."
 ;;                  (lambda (x) (dc-play-sound file))
 ;;     (setq erc-insert-post-hook new-hooks)
         
+(defvar dc-erc-match-for-sound '("^<[^>]+> .+"))
+
 (defun dc-erc-sound-function ()
   (unless dc-erc-mute
     (let ((message (buffer-substring (point-min) (point-max))))
-      (when (string-match "^<[^>]+> .+" message)
+      (when (loop for match in dc-erc-match-for-sound
+                  thereis (string-match match message))
         (dc-play-sound dc-erc-sound-file)))))
 
 (defun dc-erc-repl ()
@@ -841,6 +851,9 @@ like '4h' and are always at the end of a line."
 
 (defun dc-erc-process-message (user message)
   (format "%s: %s" user (eval (read message))))
+
+(defun dc-erc-log-file-name (buffer target nick server port)
+  dc-erc-log)
   
 (add-to-list 'erc-insert-modify-hook 'dc-erc-sound-function)
 (add-to-list 'erc-insert-modify-hook 'dc-erc-repl)
@@ -872,7 +885,7 @@ like '4h' and are always at the end of a line."
 
 (defun file-path-from-line ()
   (interactive)
-  (let* ((filename (buffer-substring (point-at-bol) (point-at-eol)))
+  (let* ((filename (org-trim (buffer-substring (point-at-bol) (point-at-eol))))
          (abs-path (join-paths dc-file-prefix filename)))
     (message abs-path)
     (setf dc-abs-path abs-path)
@@ -889,3 +902,11 @@ like '4h' and are always at the end of a line."
 
 (global-set-key (kbd "s-c") 'file-path-from-line)
 (global-set-key (kbd "s-v") 'dc-open-abs-path)
+
+(defun dc-slurp (file)
+  "Slurp a file into a variable"
+  (with-temp-buffer (insert-file-contents file) (buffer-string)))
+
+(defun dc-slurp-array (file)
+  "Slurp a file into an array, where each element represents a line of the file"
+  (split-string (dc-slurp file) "\n" t))

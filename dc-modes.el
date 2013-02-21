@@ -1,5 +1,9 @@
 ;; (load "~/elisp/nxhtml/autostart")
 
+;; For LiveScript mode
+(require 'livescript-mode)
+(add-to-list 'auto-mode-alist '("\\.ls" . livescript-mode))
+
 ;; Org-mode settings (these have to be set before org is ever loaded)
 (setf org-hide-leading-stars t)
 (setf org-replace-disputed-keys t)

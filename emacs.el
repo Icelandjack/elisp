@@ -1,4 +1,4 @@
-;; ;; Start the emacs server
+ ;; ;; Start the emacs server
 ;; (custom-set-variables
 ;;   ;; custom-set-variables was added by Custom.
 ;;   ;; If you edit it by hand, you could mess it up, so be careful.
@@ -75,7 +75,7 @@
  '(erc-log-mode t)
  '(erc-log-write-after-insert t)
  '(erc-log-write-after-send t)
- '(erc-modules (quote (autoaway autojoin button completion fill irccontrols list match menu move-to-prompt netsplit networks noncommands notifications readonly ring sound stamp spelling track)))
+ '(erc-modules (quote (autoaway autojoin button completion fill irccontrols list match menu move-to-prompt netsplit networks noncommands readonly ring sound stamp spelling track)))
  '(erc-nick "dc")
  '(erc-nick-uniquifier "!")
  '(erc-port 6666)
@@ -108,4 +108,3 @@
  '(tool-bar-mode nil))
 
 (put 'narrow-to-region 'disabled nil)
-
