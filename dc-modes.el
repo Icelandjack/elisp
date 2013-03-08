@@ -8,6 +8,11 @@
 (setq org-clock-persist 'history)
 (org-clock-persistence-insinuate)
 
+;; For Javascript
+(autoload 'js2-mode "js2-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+
+
 ;; For YAML
 (require 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.yml" . yaml-mode))

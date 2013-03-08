@@ -826,7 +826,7 @@ like '4h' and are always at the end of a line."
 (defun dc-erc-sound-function ()
   (unless dc-erc-mute
     (let ((message (buffer-substring (point-min) (point-max))))
-      (when (string-match "^<[^>]+> .+" message)
+      (when (string-match "dc[^a-z]\\|donnie" message)
         (dc-play-sound dc-erc-sound-file)))))
 
 (defun dc-erc-repl ()
