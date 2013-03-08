@@ -826,10 +826,6 @@ like '4h' and are always at the end of a line."
 (defvar dc-erc-sound-match "\\(\\(^\\|[^a-z]\\)dc\\([^a-z]\\|$\\)\\)\\|donnie")
 (defun dc-erc-sound-function ()
   (unless dc-erc-mute
-<<<<<<< HEAD
-    (let ((message (buffer-substring (point-min) (point-max))))
-      (when (string-match "dc[^a-z]\\|donnie" message)
-=======
     (let ((message (buffer-substring (point-min) (point-max)))
           (private-message-buffers
            (remove-if (lambda (x)
@@ -841,7 +837,6 @@ like '4h' and are always at the end of a line."
              ;; The buffer where the string came in is a query buffer,
              ;; someone is private-messaging you.
              (member (buffer-name (current-buffer)) private-message-buffers))
->>>>>>> 0c0e0ce1fe48ead4967862b84676fd4fd8496486
         (dc-play-sound dc-erc-sound-file)))))
 
 (defun dc-erc-repl ()
