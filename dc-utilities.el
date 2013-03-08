@@ -823,10 +823,25 @@ like '4h' and are always at the end of a line."
 ;;                  (lambda (x) (dc-play-sound file))
 ;;     (setq erc-insert-post-hook new-hooks)
         
+(defvar dc-erc-sound-match "\\(\\(^\\|[^a-z]\\)dc\\([^a-z]\\|$\\)\\)\\|donnie")
 (defun dc-erc-sound-function ()
   (unless dc-erc-mute
+<<<<<<< HEAD
     (let ((message (buffer-substring (point-min) (point-max))))
       (when (string-match "dc[^a-z]\\|donnie" message)
+=======
+    (let ((message (buffer-substring (point-min) (point-max)))
+          (private-message-buffers
+           (remove-if (lambda (x)
+                        (member x '("#dev" "irc.socialtext.net:6666")))
+                      (erc-all-buffer-names))))
+      (when (or
+             ;; String matches something like "dc" or "donnie"
+             (string-match dc-erc-sound-match message)
+             ;; The buffer where the string came in is a query buffer,
+             ;; someone is private-messaging you.
+             (member (buffer-name (current-buffer)) private-message-buffers))
+>>>>>>> 0c0e0ce1fe48ead4967862b84676fd4fd8496486
         (dc-play-sound dc-erc-sound-file)))))
 
 (defun dc-erc-repl ()

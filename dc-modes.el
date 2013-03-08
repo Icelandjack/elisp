@@ -5,8 +5,12 @@
 (setf org-replace-disputed-keys t)
 
 ;; For saving org-mode work-time clock history across Emacs sessions
-(setq org-clock-persist 'history)
-(org-clock-persistence-insinuate)
+;; (setq org-clock-persist 'history)
+;; (org-clock-persistence-insinuate)
+
+;; For LiveScript
+(require 'livescript-mode)
+(add-to-list 'auto-mode-alist '("\\.ls" . livescript-mode))
 
 ;; For Javascript
 (autoload 'js2-mode "js2-mode" nil t)
@@ -98,7 +102,16 @@ Null prefix argument turns off the mode."
 (setq inferior-lisp-program "/usr/bin/sbcl --dynamic-space-size 10000")
 (add-to-list 'load-path "~/elisp/slime/")
 (require 'slime-autoloads)
-(slime-setup '(slime-fancy))
+(slime-setup '(slime-js slime-fancy))
+
+;; For JavaScript and associated REPL
+;; (autoload 'js2-mode "js2-mode" nil t)
+(require 'js2-mode)
+(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+(setq slime-js-swank-command "/usr/local/bin/swank-js")
+(setq slime-js-swank-args '())
+(global-set-key (kbd "C-c C-r") 'slime-js-reload)
+(add-hook 'js2-mode-hook (lambda () (slime-js-minor-mode 1)))
 
 ;; Enable full-screen
 (defun fullscreen (&optional f)

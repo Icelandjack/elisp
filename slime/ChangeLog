@@ -1,3 +1,37 @@
+2013-02-20  Stas Boukarev  <stassats@gmail.com>
+
+	* slime.el (slime-attempt-connection): Don't run the timer with a
+	repeat argument, slime-attempt-connection will reinstantiate the
+	timer if needed, otherwise it can be a possible source of race
+	conditions.
+
+2013-02-13  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-allegro.lisp (eval-in-frame): debugger:frame-var-name can
+	return nil; ignore those vars.
+
+	* slime.el (sldb-setup): Allegro somehow managed to enter sldb at
+	the same level twice.  Add an assertion that checks that the
+	condition is the same if sldb-level is the same as last time.
+
+2013-02-08  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-lispworks.lisp (frame-package): Implemented.
+	(function-name-package): New.
+
+2013-02-08  Helmut Eller  <heller@common-lisp.net>
+
+	* swank-allegro.lisp (handle-compiler-warning): Ignore "Closure
+	will be stack allocated" notes.  Those are harmless and there are
+	too many of them.
+	(pc-source-location, ldb-code-to-src-loc): Handle case when
+	excl::ldb-code-pc returns nil.
+
+2013-02-02  Stas Boukarev  <stassats@gmail.com>
+
+	* swank-backend.lisp (type-specifier-p): New.
+	Implement it for ACL, ECL, CCL, Clisp, SBCL, LW.
+
 2013-01-12  Stas Boukarev  <stassats@gmail.com>
 
 	* swank-backend.lisp: Add a couple of ignore declarations.
