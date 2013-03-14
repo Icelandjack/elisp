@@ -882,7 +882,8 @@ like '4h' and are always at the end of a line."
 
 (defun file-path-from-line ()
   (interactive)
-  (let* ((filename (buffer-substring (point-at-bol) (point-at-eol)))
+  (let* ((filename (string-trim
+                    (buffer-substring (point-at-bol) (point-at-eol))))
          (abs-path (join-paths dc-file-prefix filename)))
     (message abs-path)
     (setf dc-abs-path abs-path)
