@@ -13,12 +13,12 @@
 ;; (org-clock-persistence-insinuate)
 
 ;; For LiveScript
-(require 'livescript-mode)
-(add-to-list 'auto-mode-alist '("\\.ls" . livescript-mode))
+;; (require 'livescript-mode)
+;; (add-to-list 'auto-mode-alist '("\\.ls" . livescript-mode))
 
 ;; For Javascript
-(autoload 'js2-mode "js2-mode" nil t)
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+;;(autoload 'js2-mode "js2-mode" nil t)
+;;(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
 
 ;; For YAML
@@ -110,12 +110,12 @@ Null prefix argument turns off the mode."
 
 ;; For JavaScript and associated REPL
 ;; (autoload 'js2-mode "js2-mode" nil t)
-(require 'js2-mode)
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-(setq slime-js-swank-command "/usr/local/bin/swank-js")
-(setq slime-js-swank-args '())
-(global-set-key (kbd "C-c C-r") 'slime-js-reload)
-(add-hook 'js2-mode-hook (lambda () (slime-js-minor-mode 1)))
+;; (require 'js2-mode)
+;; (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+;; (setq slime-js-swank-command "/usr/local/bin/swank-js")
+;; (setq slime-js-swank-args '())
+;; (global-set-key (kbd "C-c C-r") 'slime-js-reload)
+;; (add-hook 'js2-mode-hook (lambda () (slime-js-minor-mode 1)))
 
 ;; Enable full-screen
 (defun fullscreen (&optional f)
@@ -252,60 +252,4 @@ Null prefix argument turns off the mode."
 
 ;; Temmplate Toolkit files should be opened in HTML mode
 (add-to-list 'auto-mode-alist '("\\.tt2" . html-mode))
-
-;; ;;
-;; ;; BEGIN Haskell Setup
-;; ;;
-
-;; ;; Font Locking, Programming Modes, and Compilation settings
-;; ;;
-
-;; ;; maximum colors
-;; (setq font-lock-maximum-decoration t)
-
-;; ;; extra key bindings
-;; (global-set-key "\M-C" 'compile)
-;; (global-set-key "\C-^" 'next-error)
-;; (global-set-key "\C-\M-g" 'goto-line)
-
-;; ;; use spaces instead of tabs
-;; (setq indent-tab-mode nil)
-
-;; ;; haskell mode configuration
-;; (setq auto-mode-alist
-;;       (append auto-mode-alist
-;;               '(("\\.[hg]s$"  . haskell-mode)
-;;                 ("\\.hic?$"     . haskell-mode)
-;;                 ("\\.hsc$"     . haskell-mode)
-;;                 ("\\.chs$"    . haskell-mode)
-;;                 ("\\.l[hg]s$" . literate-haskell-mode))))
-;; (autoload 'haskell-mode "haskell-mode"
-;;   "Major mode for editing Haskell scripts." t)
-;; (autoload 'literate-haskell-mode "haskell-mode"
-;;   "Major mode for editing literate Haskell scripts." t)
-
-;; ;adding the following lines according to which modules you want to use:
-;; (require 'inf-haskell)
-
-;; (add-hook 'haskell-mode-hook 'turn-on-font-lock)
-;; ;(add-hook 'haskell-mode-hook 'turn-off-haskell-decl-scan)
-;; ;(add-hook 'haskell-mode-hook 'turn-off-haskell-doc-mode)
-;; (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
-;; ;(add-hook 'haskell-mode-hook 'turn-on-haskell-simple-indent)
-;; ;(add-hook 'haskell-mode-hook 'turn-on-haskell-hugs)
-;; ;(add-hook 'haskell-mode-hook 'turn-on-haskell-ghci)
-;; ;(add-hook 'haskell-mode-hook 
-;; ;   (function
-;; ;    (lambda ()
-;; ;      (setq haskell-program-name "ghci")
-;; ;      (setq haskell-ghci-program-name "ghci6")
-;; ;      (setq haskell-ghci-program-args 
-;; ;         '("-fcontext-stack=30" 
-;; ;           "-fglasgow-exts" 
-;; ;           "-farrows")))))
-
-;; ;;
-;; ;; END Haskell Setup
-;; ;;
-
 
