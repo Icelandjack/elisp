@@ -68,16 +68,18 @@
  '(erc-away-nickname "dc\\away")
  '(erc-default-sound "/usr/lib/libreoffice/share/gallery/sounds/apert.wav")
  '(erc-email-userid "Donald.Cameron")
- '(erc-generate-log-file-name-function (quote dc-erc-log-file-name))
  '(erc-join-buffer (quote buffer))
+<<<<<<< HEAD
  '(erc-log-channels-directory "~/Documents")
  '(erc-log-insert-log-on-open nil)
  '(erc-log-mode t)
  '(erc-log-write-after-insert t)
  '(erc-log-write-after-send t)
+=======
+>>>>>>> 618bb3b51fd8d6221db482bb819b80b6c79ea1d3
  '(erc-modules (quote (autoaway autojoin button completion fill irccontrols list match menu move-to-prompt netsplit networks noncommands readonly ring sound stamp spelling track)))
  '(erc-nick "dc")
- '(erc-nick-uniquifier "!")
+ '(erc-nick-uniquifier "-")
  '(erc-port 6666)
  '(erc-server "irc.socialtext.net")
  '(erc-sound-mode t)

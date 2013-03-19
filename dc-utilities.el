@@ -829,14 +829,21 @@ like '4h' and are always at the end of a line."
 ;;     (add-to-list 'erc-insert-post-hook
 ;;                  (lambda (x) (dc-play-sound file))
 ;;     (setq erc-insert-post-hook new-hooks)
-        
-(defvar dc-erc-match-for-sound '("^<[^>]+> .+"))
 
+(defvar dc-erc-sound-match "\\(\\(^\\|[^a-z]\\)dc\\([^a-z]\\|$\\)\\)\\|donnie")
 (defun dc-erc-sound-function ()
   (unless dc-erc-mute
-    (let ((message (buffer-substring (point-min) (point-max))))
-      (when (loop for match in dc-erc-match-for-sound
-                  thereis (string-match match message))
+    (let ((message (buffer-substring (point-min) (point-max)))
+          (private-message-buffers
+           (remove-if (lambda (x)
+                        (member x '("#dev" "irc.socialtext.net:6666")))
+                      (erc-all-buffer-names))))
+      (when (or
+             ;; String matches something like "dc" or "donnie"
+             (string-match dc-erc-sound-match message)
+             ;; The buffer where the string came in is a query buffer,
+             ;; someone is private-messaging you.
+             (member (buffer-name (current-buffer)) private-message-buffers))
         (dc-play-sound dc-erc-sound-file)))))
 
 (defun dc-erc-repl ()
@@ -852,11 +859,15 @@ like '4h' and are always at the end of a line."
 (defun dc-erc-process-message (user message)
   (format "%s: %s" user (eval (read message))))
 
-(defun dc-erc-log-file-name (buffer target nick server port)
-  dc-erc-log)
+(defun dc-erc-log-message ()
+  (let ((message (base64-encode-string 
+                  (bufer-substring (point-min) (point-max)))))
+    (shell-command-to-string (concat "cat '" message "' >> " dc-erc-log))))
   
 (add-to-list 'erc-insert-modify-hook 'dc-erc-sound-function)
 (add-to-list 'erc-insert-modify-hook 'dc-erc-repl)
+(add-to-list 'erc-insert-post-hook 'dc-erc-log-messge)
+(add-to-list 'erc-send-post-hook 'dc-erc-log-message)
 
 ;; Put these in .local-settings.el
 ;; (setq dc-erc-repl-enabled t)
@@ -885,7 +896,8 @@ like '4h' and are always at the end of a line."
 
 (defun file-path-from-line ()
   (interactive)
-  (let* ((filename (org-trim (buffer-substring (point-at-bol) (point-at-eol))))
+  (let* ((filename (string-trim
+                    (buffer-substring (point-at-bol) (point-at-eol))))
          (abs-path (join-paths dc-file-prefix filename)))
     (message abs-path)
     (setf dc-abs-path abs-path)
