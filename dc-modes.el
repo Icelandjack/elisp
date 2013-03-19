@@ -1,5 +1,9 @@
 ;; (load "~/elisp/nxhtml/autostart")
 
+;; For LiveScript mode
+(require 'livescript-mode)
+(add-to-list 'auto-mode-alist '("\\.ls" . livescript-mode))
+
 ;; Org-mode settings (these have to be set before org is ever loaded)
 (setf org-hide-leading-stars t)
 (setf org-replace-disputed-keys t)
@@ -9,12 +13,12 @@
 ;; (org-clock-persistence-insinuate)
 
 ;; For LiveScript
-(require 'livescript-mode)
-(add-to-list 'auto-mode-alist '("\\.ls" . livescript-mode))
+;; (require 'livescript-mode)
+;; (add-to-list 'auto-mode-alist '("\\.ls" . livescript-mode))
 
 ;; For Javascript
-(autoload 'js2-mode "js2-mode" nil t)
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+;;(autoload 'js2-mode "js2-mode" nil t)
+;;(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
 
 
 ;; For YAML
@@ -106,12 +110,12 @@ Null prefix argument turns off the mode."
 
 ;; For JavaScript and associated REPL
 ;; (autoload 'js2-mode "js2-mode" nil t)
-(require 'js2-mode)
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-(setq slime-js-swank-command "/usr/local/bin/swank-js")
-(setq slime-js-swank-args '())
-(global-set-key (kbd "C-c C-r") 'slime-js-reload)
-(add-hook 'js2-mode-hook (lambda () (slime-js-minor-mode 1)))
+;; (require 'js2-mode)
+;; (add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+;; (setq slime-js-swank-command "/usr/local/bin/swank-js")
+;; (setq slime-js-swank-args '())
+;; (global-set-key (kbd "C-c C-r") 'slime-js-reload)
+;; (add-hook 'js2-mode-hook (lambda () (slime-js-minor-mode 1)))
 
 ;; Enable full-screen
 (defun fullscreen (&optional f)
@@ -255,3 +259,4 @@ Null prefix argument turns off the mode."
 ;;(add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
 (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
 ;;(add-hook 'haskell-mode-hook 'turn-on-haskell-simple-indent)
+
