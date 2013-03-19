@@ -851,9 +851,16 @@ like '4h' and are always at the end of a line."
 
 (defun dc-erc-process-message (user message)
   (format "%s: %s" user (eval (read message))))
+
+(defun dc-erc-log-message ()
+  (let ((message (base64-encode-string 
+                  (bufer-substring (point-min) (point-max)))))
+    (shell-command-to-string (concat "cat '" message "' >> " dc-erc-log))))
   
 (add-to-list 'erc-insert-modify-hook 'dc-erc-sound-function)
 (add-to-list 'erc-insert-modify-hook 'dc-erc-repl)
+(add-to-list 'erc-insert-post-hook 'dc-erc-log-messge)
+(add-to-list 'erc-send-post-hook 'dc-erc-log-message)
 
 ;; Put these in .local-settings.el
 ;; (setq dc-erc-repl-enabled t)

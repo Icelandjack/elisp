@@ -68,13 +68,7 @@
  '(erc-away-nickname "dc\\away")
  '(erc-default-sound "/usr/lib/libreoffice/share/gallery/sounds/apert.wav")
  '(erc-email-userid "Donald.Cameron")
- '(erc-generate-log-file-name-function (quote dc-erc-log-file-name))
  '(erc-join-buffer (quote buffer))
- '(erc-log-channels-directory "~/Documents")
- '(erc-log-insert-log-on-open nil)
- '(erc-log-mode t)
- '(erc-log-write-after-insert t)
- '(erc-log-write-after-send t)
  '(erc-modules (quote (autoaway autojoin button completion fill irccontrols list match menu move-to-prompt netsplit networks noncommands readonly ring sound stamp spelling track)))
  '(erc-nick "dc")
  '(erc-nick-uniquifier "-")
@@ -109,9 +103,3 @@
 
 (put 'narrow-to-region 'disabled nil)
 
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "white" :foreground "black" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 96 :width normal :foundry "unknown" :family "Liberation Mono")))))
