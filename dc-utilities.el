@@ -860,13 +860,23 @@ like '4h' and are always at the end of a line."
   (format "%s: %s" user (eval (read message))))
 
 (defun dc-erc-log-message ()
-  (let ((message (base64-encode-string 
-                  (bufer-substring (point-min) (point-max)))))
-    (shell-command-to-string (concat "cat '" message "' >> " dc-erc-log))))
+  (let ((message (buffer-substring (point-min) (point-max))))
+    (write-to-log dc-erc-log message)))
+
+(defun write-to-log (log-file message)
+  (let ((shell-command (concat "echo '" 
+                               (replace-regexp-in-string "'" "‘" message)
+                               "' >> "
+                               (if (symbolp log-file)
+                                   (symbol-name log-file)
+                                 log-file))))
+    (if (equal log-file :debug)
+        shell-command
+    (shell-command-to-string shell-command))))
   
 (add-to-list 'erc-insert-modify-hook 'dc-erc-sound-function)
 (add-to-list 'erc-insert-modify-hook 'dc-erc-repl)
-(add-to-list 'erc-insert-post-hook 'dc-erc-log-messge)
+(add-to-list 'erc-insert-post-hook 'dc-erc-log-message)
 (add-to-list 'erc-send-post-hook 'dc-erc-log-message)
 
 ;; Put these in .local-settings.el
