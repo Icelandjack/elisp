@@ -830,7 +830,7 @@ like '4h' and are always at the end of a line."
 ;;                  (lambda (x) (dc-play-sound file))
 ;;     (setq erc-insert-post-hook new-hooks)
 
-(defvar dc-erc-sound-match "\\(\\(^\\|[^a-z]\\)dc\\([^a-z]\\|$\\)\\)\\|donnie")
+(defvar dc-erc-sound-match "\\(\\(^\\|[^-a-z]\\)dc\\([^-a-z]\\|$\\)\\)\\|donnie")
 (defun dc-erc-sound-function ()
   (unless dc-erc-mute
     (let ((message (buffer-substring (point-min) (point-max)))
@@ -901,8 +901,8 @@ like '4h' and are always at the end of a line."
       (delete-region (point-min) (point-max))
       (insert (invert-regex regex)))))
 
-(setf dc-file-prefix "/ssh:erin:/home/dcameron/src/st/socialtext")
-(setf dc-abs-path nil)
+(defvar dc-file-prefix "/ssh:erin:/home/dcameron/src/st/socialtext")
+(defvar dc-abs-path nil)
 
 (defun file-path-from-line ()
   (interactive)
