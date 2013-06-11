@@ -132,6 +132,10 @@
 ;; (setq blink-cursor-alist '(box . nil))
 (setq cursor-in-non-selected-windows nil)
 (setq blink-cursor-interval 0.15)
-(set-cursor-color "cyan")
+;; (set-cursor-color "cyan")
 ;; (blink-cursor-mode t)
 
+;; Reverse video
+(when dc-reverse-video
+  (x-handle-reverse-video (selected-frame) '((reverse . t)))
+  (set-cursor-color "red"))

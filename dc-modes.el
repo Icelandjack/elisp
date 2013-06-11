@@ -1,5 +1,8 @@
 ;; (load "~/elisp/nxhtml/autostart")
 
+;; Reverse video
+;; (x-handle-reverse-video (selected-frame) '((reverse . t)))
+
 ;; For LiveScript mode
 (require 'livescript-mode)
 (add-to-list 'auto-mode-alist '("\\.ls" . livescript-mode))
@@ -259,4 +262,66 @@ Null prefix argument turns off the mode."
 ;;(add-hook 'haskell-mode-hook 'turn-on-haskell-indentation)
 (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
 ;;(add-hook 'haskell-mode-hook 'turn-on-haskell-simple-indent)
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+
+ ;; For edif
+ '(ediff-split-window-function (quote split-window-horizontally))
+ '(ediff-window-setup-function (quote ediff-setup-windows-plain))
+
+;; For erc
+ '(erc-auto-discard-away dc-erc-auto-discard-away)
+ '(erc-auto-set-away dc-erc-auto-set-away)
+ '(erc-autoaway-idle-method dc-erc-autoaway-idle-method)
+ '(erc-autoaway-idle-seconds dc-erc-autoaway-idle-seconds)
+ '(erc-autoaway-message dc-erc-autoaway-message)
+ '(erc-autoaway-mode dc-erc-autoaway-mode)
+ '(erc-autojoin-channels-alist dc-erc-autojoin-channels-alist)
+ '(erc-autojoin-delay dc-erc-autojoin-delay)
+ '(erc-autojoin-mode dc-erc-autojoin-mode)
+ '(erc-away-nickname dc-erc-away-nickname)
+ '(erc-default-sound dc-erc-default-sound)
+ '(erc-email-userid dc-erc-email-userid)
+ '(erc-join-buffer dc-erc-join-buffer)
+ '(erc-modules dc-erc-modules)
+ '(erc-nick dc-erc-nick)
+ '(erc-nick-uniquifier dc-erc-nick-uniquifier)
+ '(erc-port dc-erc-port)
+ '(erc-server dc-erc-server)
+ '(erc-sound-mode dc-erc-sound-mode)
+ '(erc-sound-path dc-erc-sound-path)
+ '(erc-system-name dc-erc-system-name)
+ '(erc-user-full-name dc-erc-user-full-name)
+ '(erc-password dc-erc-password)
+
+ ;; For Jabber
+ '(jabber-account-list dc-jabber-accounts)
+ '(jabber-alert-info-message-hooks (quote (jabber-info-display)))
+ '(jabber-alert-message-hooks (quote (jabber-message-libnotify jabber-message-beep jabber-message-wave jabber-message-echo jabber-message-display jabber-message-scroll)))
+ '(jabber-alert-message-wave dc-jabber-message-wave-file)
+ '(jabber-alert-presence-hooks nil)
+ '(jabber-auto-reconnect t)
+ '(jabber-autoaway-verbose t)
+ '(jabber-avatar-verbose nil)
+ '(jabber-chat-buffer-format "*-jabber-person-%n-*")
+ '(jabber-history-enabled t)
+ '(jabber-mode-line-mode t)
+ '(jabber-play-sound-file (quote dc-play-sound))
+ '(jabber-roster-buffer "*-jabber-roster-*")
+ '(jabber-roster-line-format " %c %-25n %u %-8s (%r)")
+ '(jabber-roster-show-title nil)
+ '(jabber-show-offline-contacts t)
+ '(jabber-use-global-history t)
+ '(jabber-vcard-avatars-retrieve nil)
+
+ ;; Misc
+ '(column-number-mode t)
+ '(inhibit-startup-screen t)
+ '(menu-bar-mode nil)
+ '(show-paren-mode t)
+ '(tool-bar-mode nil))
 
