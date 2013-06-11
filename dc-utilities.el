@@ -932,3 +932,25 @@ like '4h' and are always at the end of a line."
 (defun dc-slurp-array (file)
   "Slurp a file into an array, where each element represents a line of the file"
   (split-string (dc-slurp file) "\n" t))
+
+(cl-defun dc-find-long-lines (&optional buffer width)
+  (let ((width (or width 80))
+        (buffer (or buffer (current-buffer))))
+    (with-current-buffer buffer
+      (goto-char (point-min))
+      (loop while (not (eobp))
+            for line-number = 1 then (progn (forward-line 1)
+                                            (1+ line-number))
+            when (> (- (point-at-eol) (point-at-bol)) width)
+            collect line-number into line-numbers
+            finally (return (cons :long-lines
+                                  (or line-numbers (list :none))))))))
+
+(defun revert-matching-buffers (regexp)
+  (loop with files = nil
+        for buffer in (buffer-list)
+        for file = (buffer-file-name buffer)
+        when (and file (string-match regexp file))
+        do (with-current-buffer buffer (revert-buffer t t))
+          (push file files)
+        finally (return files)))

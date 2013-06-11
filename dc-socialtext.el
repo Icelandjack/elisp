@@ -106,11 +106,3 @@
 ;;         (url-request-extra-headers headers)
 
   
-(defun revert-matching-buffers (regexp)
-  (loop with files = nil
-        for buffer in (buffer-list)
-        for file = (buffer-file-name buffer)
-        when (and file (string-match regexp file))
-        do (with-current-buffer buffer (revert-buffer t t))
-          (push file files)
-        finally (return files)))
