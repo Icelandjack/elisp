@@ -1,6 +1,7 @@
 (global-set-key (kbd "s-u") 'revert-buffer)
 (global-set-key (kbd "C-c #") 'four-digit-hex-number)
 (global-set-key (kbd "s-<return>") 'fullscreen)
+(global-set-key (kbd "C-s-<return>") 'big-screen)
 
 ;; Make tramp backup to a local directory
 (setq tramp-auto-save-directory "~/backup/emacs/")

@@ -4,6 +4,7 @@
 ;; (x-handle-reverse-video (selected-frame) '((reverse . t)))
 
 (defun big-screen nil
+  (interactive)
   (set-frame-width (selected-frame) dc-big-screen-width)
   (set-frame-height (selected-frame) dc-big-screen-height))
 
