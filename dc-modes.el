@@ -3,6 +3,10 @@
 ;; Reverse video
 ;; (x-handle-reverse-video (selected-frame) '((reverse . t)))
 
+(defun big-screen nil
+  (set-frame-width (selected-frame) dc-big-screen-width)
+  (set-frame-height (selected-frame) dc-big-screen-height))
+
 ;; For LiveScript mode
 (require 'livescript-mode)
 (add-to-list 'auto-mode-alist '("\\.ls" . livescript-mode))

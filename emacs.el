@@ -49,3 +49,10 @@
 ;; (set-frame-size-according-to-resolution)
 
 (put 'narrow-to-region 'disabled nil)
+
+;; Reverse video
+(when dc-reverse-video
+  (run-at-time "1 second" nil 
+               (lambda nil
+                 (x-handle-reverse-video (selected-frame) '((reverse . t)))
+                 (set-cursor-color "red"))))
