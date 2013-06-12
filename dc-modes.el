@@ -302,6 +302,7 @@ Null prefix argument turns off the mode."
  '(erc-system-name dc-erc-system-name)
  '(erc-user-full-name dc-erc-user-full-name)
  '(erc-password dc-erc-password)
+ '(erc-prompt-for-password nil)
 
  ;; For Jabber
  '(jabber-account-list dc-jabber-accounts)
