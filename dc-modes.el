@@ -110,12 +110,6 @@ Null prefix argument turns off the mode."
         (height . 40)))
 (edit-server-start)
 
-;; Load slime
-(setq inferior-lisp-program "/usr/bin/sbcl --dynamic-space-size 10000")
-(add-to-list 'load-path "~/elisp/slime/")
-(require 'slime-autoloads)
-(slime-setup '(slime-js slime-fancy))
-
 ;; For JavaScript and associated REPL
 ;; (autoload 'js2-mode "js2-mode" nil t)
 ;; (require 'js2-mode)
