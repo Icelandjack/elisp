@@ -210,7 +210,6 @@ region into long lines."
                          (concat url (when args
                                        (concat "?" (url-request args))))
                        url)))
-    (print (string-join "; " (flatten url-request-extra-headers)))
     (when headers
       (loop for (key value) in headers
             for xvalue = (cond
@@ -221,6 +220,7 @@ region into long lines."
                                             (second value)))))
                           (t value))
             do (push (cons key xvalue) url-request-extra-headers)))
+    (message-box (string-join "; " (mapcar (lambda (x) (concat (car x) ": " (cdr x))) url-request-extra-headers)))
     (let* ((response
             (time
              (with-timeout

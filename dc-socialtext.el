@@ -17,8 +17,8 @@
 ;;             :headers (append headers `(("Authorization" (,user ,pass))))
 
 (defun query-st-dev (type path &optional args headers)
-  (let* ((host "erin")
-         (port 21000)
+  (let* ((host "borg.sinistercode.com")
+         (port 21001)
          (user "devnull1@socialtext.com")
          (pass "d3vnu11l")
          (uri (join-paths (format "http://%s:%d" host port) path))
@@ -106,3 +106,27 @@
 ;;         (url-request-extra-headers headers)
 
   
+(defun page-views (&optional params)
+  (request
+   "http://borg.sinistercode.com:21001/data/events"
+   :type "GET"
+   :headers '(("Authorization" .
+               "Basic ZGV2bnVsbDFAc29jaWFsdGV4dC5jb206ZDN2bnUxMWw=")
+              ("Accept" . "application/json"))
+   :params params
+   :parser 'buffer-string
+   :success (function* (lambda (&key data &allow-other-keys)
+                         (with-current-buffer
+                             (get-buffer "web-service-response")
+                           (erase-buffer)
+                           (insert data)
+                           (goto-char (point-min))
+                           (while (re-search-forward "," nil t)
+                             (replace-match ",\n"))
+                           (indent-region (point-min) (point-max)))))
+   :error (function* (lambda (&key error-thrown &allow-other-keys&rest _)
+                       (with-current-buffer 
+                           (get-buffer "web-service-response")
+                         (erase-buffer)
+                         (insert (format "Error: %S" error-thrown))))))
+  "Done.")

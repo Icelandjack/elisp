@@ -3,6 +3,13 @@
 (global-set-key (kbd "s-<return>") 'fullscreen)
 (global-set-key (kbd "C-s-<return>") 'big-screen)
 
+;; Marmalade
+(require 'package)
+(add-to-list 'package-archives 
+    '("marmalade" .
+      "http://marmalade-repo.org/packages/"))
+(package-initialize)
+
 ;; Make tramp backup to a local directory
 (setq tramp-auto-save-directory "~/backup/emacs/")
 
