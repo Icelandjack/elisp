@@ -106,7 +106,7 @@
 ;;         (url-request-extra-headers headers)
 
   
-(defun page-views (&optional params)
+(cl-defun page-views (&key params)
   (request
    "http://borg.sinistercode.com:21001/data/events"
    :type "GET"
@@ -130,3 +130,87 @@
                          (erase-buffer)
                          (insert (format "Error: %S" error-thrown))))))
   "Done.")
+
+(setf st-get-output-buffer "web-service-response"
+      st-get-accept :json
+      st-get-username "username"
+      st-get-password "password"
+      st-get-path "http://borg.sinistercode.com/data/users/3"
+      st-get-params nil)
+
+(cl-defun st-get (&key username password accept path params output-buffer)
+
+   "This function calls the given server with an HTTP GET and
+   writes the reponse from the server to the specified buffer.
+   If you don't speficy a parameter it defaults to something.
+   If you provide a value for a parameter, the value is remembered
+   until the next time emacs is started. The value for the path
+   parameter should look like this: http://abc.com/a/b
+   The value for the accept parameter can be one of :json, :xml,
+   :html, and :text.  It can also be any string, in which
+   case the Accept header will be set to that string.  An
+   Authorization header is always sent and it is always a
+   Basic Authentication authorization string.  So, make sure
+   you provide valid credentials.  The output-buffer value can
+   be a buffer or a string representing the name of the buffer. 
+   If a buffer with that name doesn't exist, this function
+   creates it."
+
+  (setf st-get-output-buffer-name
+        (if output-buffer
+            (setf st-get-output-buffer-name output-buffer)
+          st-get-output-buffer-name))
+  (setf st-get-accept 
+        (if accept
+            (setf st-get-accept
+                  (getf (list :json "application/json"
+                              :xml "text/xml"
+                              :html "text/html"
+                              :text "text/plain")
+                        accept))
+          st-get-accept))
+  (let* ((username (if username (setf st-get-username username)
+                     st-get-username))
+         (password (if password (setf st-get-password password)
+                     st-get-password))
+         (authorization (concat "Basic "
+                                (base64-encode-string 
+                                 (concat username ":" password))))
+         (headers `(("Authorization" . ,authorization)
+                    ("Accept" . ,st-get-accept)))
+         (path (if path (setf st-get-path path) st-get-path))
+         (params (if params (setf st-get-params params) params)))
+    (request
+     path
+     :type "GET"
+     :headers headers
+     :params params
+     :parser 'buffer-string
+     :success (function* 
+               (lambda (&key data &allow-other-keys)
+                 (with-current-buffer
+                     (or (get-buffer st-get-output-buffer-name)
+                         (generate-new-buffer st-get-output-buffer-name))
+                   (erase-buffer)
+                   (insert data)
+                   (cond ((string= st-get-accept "application/json")
+                          (js-mode)
+                          (goto-char (point-min))
+                          (while (re-search-forward "," nil t)
+                            (replace-match ",\n"))
+                          (indent-region (point-min) (point-max)))
+                         ((string= st-get-accept "text/xml")
+                          (nxml-mode)
+                          (indent-region (point-min) (point-max)))
+                         ((string= st-get-accept "text/html")
+                          (html-mode)
+                          (indent-region (point-min) (point-max)))
+                         (t nil)))))
+     :error (function*
+             (lambda (&key error-thrown &allow-other-keys&rest _)
+               (with-current-buffer 
+                   (or (get-buffer st-get-output-buffer-name)
+                       (generate-new-buffer st-get-output-buffer-name))
+                 (erase-buffer)
+                 (insert (format "Error: %S" error-thrown)))))))
+  "Done")
