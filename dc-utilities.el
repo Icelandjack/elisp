@@ -949,7 +949,7 @@ like '4h' and are always at the end of a line."
 (defun revert-matching-buffers (regexp)
   (loop with files = nil
         for buffer in (buffer-list)
-        for file = (buffer-file-name buffer)
+        for file = (org-no-properties (buffer-file-name buffer))
         when (and file (string-match regexp file))
         do (with-current-buffer buffer (revert-buffer t t))
           (push file files)
